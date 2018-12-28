@@ -1,8 +1,9 @@
-package kmipbin
+package parser
 
 import (
 	"bytes"
 	"io"
+	"github.com/rajnikant12345/kmip_g/kmipbin"
 )
 
 
@@ -13,7 +14,7 @@ func TTLVReader(reader io.ReadWriter) ([]byte, error) {
 
 	tmp := initialBytes
 
-	var expected KmipLength
+	var expected kmipbin.KmipLength
 	// we expect 8 bytes initially
 	expected = 8
 	for {
@@ -28,7 +29,7 @@ func TTLVReader(reader io.ReadWriter) ([]byte, error) {
 		}else {
 			break
 		}
-		expected = expected - KmipLength(b)
+		expected = expected - kmipbin.KmipLength(b)
 	}
 
 	out.Write(initialBytes)
@@ -52,7 +53,7 @@ func TTLVReader(reader io.ReadWriter) ([]byte, error) {
 		}else {
 			break
 		}
-		expected = expected - KmipLength(b)
+		expected = expected - kmipbin.KmipLength(b)
 	}
 	out.Write(fullBytes)
 

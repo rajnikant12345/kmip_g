@@ -1,4 +1,4 @@
-package kmipbin
+package parser
 
 import (
 	"bytes"

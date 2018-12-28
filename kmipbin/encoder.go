@@ -7,6 +7,21 @@ import (
 )
 
 
+type KmipTagType struct {
+	Tag uint32
+	Type uint32
+}
+
+func (k *KmipTagType) UnMarshalBin( b []byte  ) error {
+	if len(b) != 4 {
+		return errors.New("Invalid Kmip Tag")
+	}
+	k.Tag =  binary.BigEndian.Uint32(b)
+	k.Type =  k.Tag & 0x000000ff
+	k.Tag = k.Tag >> 8
+	return nil
+}
+
 
 type KmipLength uint32
 
