@@ -1,4 +1,5 @@
 package kmipbin
+
 /*
 var TagValueMap map[int]string
 
