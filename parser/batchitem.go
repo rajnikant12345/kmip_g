@@ -3,10 +3,10 @@ package parser
 import "github.com/rajnikant12345/kmip_g/kmipbin"
 
 type BatchItem struct {
-	Operation         *kmipbin.KmipEnum       `xml:",omitempty"`
-	UniqueBatchItemID *kmipbin.KmipByteString `xml:",omitempty"`
-	RequestPayload    *RequestPayload         `xml:",omitempty"`
-	MessageExtension  *MessageExtension       `xml:",omitempty"`
+	Operation         *kmipbin.KmipEnum       `kmip:"42005C"`
+	UniqueBatchItemID *kmipbin.KmipByteString `kmip:"420093"`
+	RequestPayload    *RequestPayload         `kmip:"42007C"`
+	MessageExtension  *MessageExtension       `kmip:"420051"`
 }
 
 func (r *BatchItem) Unmarshal(b []byte) ([]byte, error) {

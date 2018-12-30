@@ -3,10 +3,10 @@ package parser
 import "github.com/rajnikant12345/kmip_g/kmipbin"
 
 type ProtocolVersion struct {
-	ProtocolVersionMajor *kmipbin.KmipInt
-	ProtocolVersionMinor *kmipbin.KmipInt
+	ProtocolVersionMajor kmipbin.KmipInt	`kmip:"42006A"`
+	ProtocolVersionMinor kmipbin.KmipInt	`kmip:"42006B"`
 }
-
+/*
 func (r *ProtocolVersion) Unmarshal(b []byte) ([]byte, error) {
 	for {
 		if len(b) <= 0 {
@@ -33,3 +33,4 @@ func (r *ProtocolVersion) Unmarshal(b []byte) ([]byte, error) {
 	}
 	return b, nil
 }
+*/

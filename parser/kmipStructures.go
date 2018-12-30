@@ -1,16 +1,17 @@
 package parser
 
-import (
-	"github.com/rajnikant12345/kmip_g/kmipbin"
-)
-
 type RequestMessage struct {
-	RequestHeader *RequestHeader
-	BatchItem     []BatchItem
+	RequestHeader RequestHeader	`kmip:"420077"`
+	//BatchItem     []BatchItem
+}
+
+type KmipStruct struct {
+	RequestMessage RequestMessage `kmip:"420078"`
 }
 
 func (r *RequestMessage) Unmarshal(b []byte) ([]byte, error) {
-	r.BatchItem = make([]BatchItem, 0)
+	/*r.BatchItem = make([]BatchItem, 0)
+
 	for {
 		if len(b) <= 0 {
 			return b, nil
@@ -31,6 +32,7 @@ func (r *RequestMessage) Unmarshal(b []byte) ([]byte, error) {
 			return b, nil
 
 		}
-	}
+	}*/
+	return nil,nil
 
 }
