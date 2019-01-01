@@ -20,10 +20,8 @@ func Parser(rw io.ReadWriter) {
 
 	fmt.Println(string(x))
 
-
 	//r1 := RequestHeader{}
 
 	//UnmaeshalAll(r1, nil)
-
 
 }

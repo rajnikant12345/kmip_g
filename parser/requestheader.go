@@ -7,16 +7,16 @@ import (
 )
 
 type RequestHeader struct {
-	ProtocolVersion              ProtocolVersion     `kmip:"420069"`
-	MaximumResponseSize          kmipbin.KmipInt     `kmip:"420050"`
-	AsynchronousIndicator        kmipbin.KmipBoolean `kmip:"420007"`
-	AttestationCapableIndicator  kmipbin.KmipBoolean `kmip:"4200D3"`
-	AttestationType              kmipbin.KmipEnum    `kmip:"4200C7"`
-	Authentication               Authentication      `kmip:"42000C"`
-	BatchErrorContinuationOption kmipbin.KmipEnum    `kmip:"42000E"`
-	BatchOrderOption             kmipbin.KmipBoolean `kmip:"420010"`
-	TimeStamp                    kmipbin.KmipDate    `kmip:"420092"`
-	BatchCount                   kmipbin.KmipInt     `kmip:"42000D"`
+	ProtocolVersion              *ProtocolVersion     `kmip:"420069"`
+	MaximumResponseSize          *kmipbin.KmipInt     `kmip:"420050"`
+	AsynchronousIndicator        *kmipbin.KmipBoolean `kmip:"420007"`
+	AttestationCapableIndicator  *kmipbin.KmipBoolean `kmip:"4200D3"`
+	AttestationType              *kmipbin.KmipEnum    `kmip:"4200C7"`
+	Authentication               *Authentication      `kmip:"42000C"`
+	BatchErrorContinuationOption *kmipbin.KmipEnum    `kmip:"42000E"`
+	BatchOrderOption             *kmipbin.KmipBoolean `kmip:"420010"`
+	TimeStamp                    *kmipbin.KmipDate    `kmip:"420092"`
+	BatchCount                   *kmipbin.KmipInt     `kmip:"42000D"`
 }
 
 func (r *RequestHeader) Unmarshalrt(b []byte) ([]byte, error) {
@@ -35,21 +35,18 @@ func (r *RequestHeader) Unmarshalrt(b []byte) ([]byte, error) {
 		//c := field.Elem().Interface().(*ProtocolVersion)
 		fmt.Println(c.Elem().Interface())
 
-
-		}
-		//		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.String(), tag)
+	}
+	//		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.String(), tag)
 	return nil, nil
 
 	/*for {
-		str := hex.EncodeToString(b[:4])
-		t,ok := tagmap[str]
-		if !ok {
-			return b, nil
-		}
-*/
-//	}
-
-
+	str := hex.EncodeToString(b[:4])
+	t,ok := tagmap[str]
+	if !ok {
+		return b, nil
+	}
+	*/
+	//	}
 
 	//for {
 	//	if len(b) <= 0 {
@@ -82,6 +79,7 @@ func (r *RequestHeader) Unmarshalrt(b []byte) ([]byte, error) {
 	//
 	//}*/
 }
+
 /*
 func (r *RequestHeader) Unmarshal(b []byte) ([]byte, error) {
 
