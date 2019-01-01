@@ -34,9 +34,6 @@ func TestParser_Marshal(t *testing.T) {
 
 	h := hex.EncodeToString(b)
 	fmt.Println(h)
-//	b1 := bytes.Buffer{}
-//	b1.Write(b)
-//	Parser(&b1)
 
 
 
