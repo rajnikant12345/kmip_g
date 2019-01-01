@@ -1,0 +1,93 @@
+// find the type of element inside f and get it's value
+			// always create a new element and set it inside f,
+			// I did make sure f is always a pointer
+			/*switch f.Type().String() {
+
+
+			case "*kmipbin.KmipInt":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipInt
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			case "*kmipbin.KmipEnum":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipEnum
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			case "*kmipbin.KmipByteString":
+				var l kmipbin.KmipLength
+				l.UnMarshalBin((*bet)[4:8])
+				*bet = (*bet)[8:]
+				le := kmipbin.PadLength(int(l))
+				var uvi kmipbin.KmipByteString
+				uvi.UnMarshalBin((*bet)[:le], int(l))
+				*bet = (*bet)[le:]
+				f.Set(reflect.ValueOf(&uvi))
+			case "*kmipbin.KmipTextString":
+				var l kmipbin.KmipLength
+				l.UnMarshalBin((*bet)[4:8])
+				*bet = (*bet)[8:]
+				le := kmipbin.PadLength(int(l))
+				var uvi kmipbin.KmipTextString
+				uvi.UnMarshalBin((*bet)[:le], int(l))
+				*bet = (*bet)[le:]
+				f.Set(reflect.ValueOf(&uvi))
+			case "*kmipbin.KmipBoolean":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipBoolean
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			case "*kmipbin.KmipDate":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipDate
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			case "*kmipbin.KmipLongInt":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipLongInt
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			case "*kmipbin.KmipInterval":
+				*bet = (*bet)[8:]
+				var k kmipbin.KmipInterval
+				k.UnMarshalBin((*bet)[:8])
+				f.Set(reflect.ValueOf(&k))
+				(*bet) = (*bet)[8:]
+			default:
+
+				typ := reflect.TypeOf(f.Interface())
+				(*bet) = (*bet)[8:]
+
+				if typ.Kind() == reflect.Ptr {
+					typ = reflect.TypeOf(f.Interface()).Elem()
+				}
+
+				//	fmt.Println("default",typ , typ.Kind())
+
+				var k reflect.Value
+
+				if typ.Kind() == reflect.Slice {
+					tt := typ.Elem()
+					k = reflect.New(tt.Elem())
+					//fmt.Println(k.Type().String())
+				} else {
+					k = reflect.New(typ)
+				}
+
+				//	fmt.Println("default 1",k.Type().String() )
+
+				Dummy(&k, bet)
+
+				if typ.Kind() == reflect.Slice {
+					//	fmt.Println(k)
+					f.Set(reflect.Append(f, k))
+					//	fmt.Println(f)
+				} else {
+					f.Set(k)
+				}
+			}*/

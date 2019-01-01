@@ -11,43 +11,43 @@ import (
 
 
 
-func IsCompound(value reflect.Value) bool {
+func IsKmipInt(value reflect.Value) bool {
 	switch value.Type().String() {
-	case "kmipbin.KmipInt":
-		return false
-	case "kmipbin.KmipBoolean":
-		return false
-	case "kmipbin.KmipEnum":
-		return false
-	case "kmipbin.KmipDate":
-		return false
-	case "kmipbin.KmipLongInt":
-		return false
-	case "kmipbin.KmipInterval":
-		return false
-	case "kmipbin.KmipTextString":
-		return false
-	case "kmipbin.KmipByteString":
-		return false
+	case "*kmipbin.KmipInt":
+		return true
+	case "*kmipbin.KmipBoolean":
+		return true
+	case "*kmipbin.KmipEnum":
+		return true
+	case "*kmipbin.KmipDate":
+		return true
+	case "*kmipbin.KmipLongInt":
+		return true
+	case "*kmipbin.KmipInterval":
+		return true
 	}
 
-	return true
+	return false
 }
 
-func forwadBytes(b []byte) []byte {
-	return nil
+func IsKMIPString(value reflect.Value) bool {
+	switch value.Type().String() {
+	case "*kmipbin.KmipTextString":
+		return true
+	case "*kmipbin.KmipByteString":
+		return true
+	}
+
+	return false
 }
 
 
 func UnmaeshalAllT(a *KmipStruct, b []byte) {
-	//ty := reflect.TypeOf(*a)
 	v := reflect.ValueOf(a)
 
-	//fmt.Println(reflect.TypeOf(v.Elem().Field(0).Interface()))
 	typ := reflect.TypeOf(v.Elem().Field(0).Interface()).Elem()
 
 	k := reflect.New(typ)
-	//	fmt.Println(k.Type())
 
 	b = b[8:]
 	Dummy(&k, &b)
@@ -58,46 +58,50 @@ func UnmaeshalAllT(a *KmipStruct, b []byte) {
 
 func Dummy(v *reflect.Value, bet *[]byte) {
 
-	//b := *bet
 
+	// this map consisit of mapping between kmip tag and
+	// and a reflect.value
 	tagmap := make(map[string]reflect.Value)
 
-	tagmapmulti := make(map[string]bool)
 
+	// get the type of element inside v
 	ty := reflect.TypeOf(v.Elem().Interface())
 
-	//fmt.Println("lallu",ty.String() , ty.Kind().String())
 
+	// it must be a struct type, hence all the elements must be iterated and
+	// must be checked against a valid kmip tag
 	for i := 0; i < v.Elem().NumField(); i++ {
+		// het the field at index
 		field := v.Elem().Field(i)
+
+		// get the kmip tag value
 		tag := ty.Field(i).Tag.Get("kmip")
 
-		//fmt.Println(ty.Field(i) , field)
-
+		// if it's a valid kmip element then , add it to tagmap
 		if tag != "" {
 			tagmap[tag] = field
-			tagm := ty.Field(i).Tag.Get("multi")
-			if tagm == "true" {
-				tagmapmulti[tag] = true
-			} else {
-				tagmapmulti[tag] = false
-			}
 		}
 	}
 
+	// this loop is infinite as we will be iterating till we reach end of input buffer
+	// or an unwanted element is encountered.
 	for {
+
+		// check the length of input buffer
 		if len((*bet)) < 8 {
 			break
 		}
+
+		// get the tag from buffer
 		tag := strings.ToUpper(hex.EncodeToString((*bet)[:3]))
-		//fmt.Println(tag)
+
+		// find the tag in tagmap
 		f, ok := tagmap[tag]
 		if !ok {
 			return
-			//b = forwadBytes(b)
 		} else {
 
-			// handle attribute saperatr as it comes with many flavours
+			// handle attribute separate as it comes with many flavours
 			if tag == "420008" {
 
 				a := &Attribute{}
@@ -106,64 +110,24 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 				return
 			}
 
-			//fmt.Println("rajni",f.Type().String())
-			switch f.Type().String() {
-			case "*kmipbin.KmipInt":
+			if IsKmipInt(f) {
 				*bet = (*bet)[8:]
-				var k kmipbin.KmipInt
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
+				typ := reflect.TypeOf(f.Interface()).Elem()
+				k := reflect.New(typ)
+				k.MethodByName("UnMarshalBin").Call([]reflect.Value{reflect.ValueOf((*bet)[:8])})
+				f.Set(k)
 				(*bet) = (*bet)[8:]
-			case "*kmipbin.KmipEnum":
-				*bet = (*bet)[8:]
-				var k kmipbin.KmipEnum
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
-				(*bet) = (*bet)[8:]
-			case "*kmipbin.KmipByteString":
+			} else if IsKMIPString(f) {
 				var l kmipbin.KmipLength
 				l.UnMarshalBin((*bet)[4:8])
 				*bet = (*bet)[8:]
 				le := kmipbin.PadLength(int(l))
-				var uvi kmipbin.KmipByteString
-				uvi.UnMarshalBin((*bet)[:le], int(l))
+				typ := reflect.TypeOf(f.Interface()).Elem()
+				k := reflect.New(typ)
+				k.MethodByName("UnMarshalBin").Call([]reflect.Value{reflect.ValueOf((*bet)[:8]),reflect.ValueOf(int(l))})
 				*bet = (*bet)[le:]
-				f.Set(reflect.ValueOf(&uvi))
-			case "*kmipbin.KmipTextString":
-				var l kmipbin.KmipLength
-				l.UnMarshalBin((*bet)[4:8])
-				*bet = (*bet)[8:]
-				le := kmipbin.PadLength(int(l))
-				var uvi kmipbin.KmipTextString
-				uvi.UnMarshalBin((*bet)[:le], int(l))
-				*bet = (*bet)[le:]
-				f.Set(reflect.ValueOf(&uvi))
-			case "*kmipbin.KmipBoolean":
-				*bet = (*bet)[8:]
-				var k kmipbin.KmipBoolean
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
-				(*bet) = (*bet)[8:]
-			case "*kmipbin.KmipDate":
-				*bet = (*bet)[8:]
-				var k kmipbin.KmipDate
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
-				(*bet) = (*bet)[8:]
-			case "*kmipbin.KmipLongInt":
-				*bet = (*bet)[8:]
-				var k kmipbin.KmipLongInt
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
-				(*bet) = (*bet)[8:]
-			case "*kmipbin.KmipInterval":
-				*bet = (*bet)[8:]
-				var k kmipbin.KmipInterval
-				k.UnMarshalBin((*bet)[:8])
-				f.Set(reflect.ValueOf(&k))
-				(*bet) = (*bet)[8:]
-			default:
-
+				f.Set(k)
+			} else {
 				typ := reflect.TypeOf(f.Interface())
 				(*bet) = (*bet)[8:]
 
@@ -230,7 +194,6 @@ func DummyMarshal(v *reflect.Value) []byte {
 				}
 				p := field.Interface().(*kmipbin.KmipInt)
 				l := fmt.Sprintf("%08x",4)
-				fmt.Println(l)
 				k,_ := hex.DecodeString(tag+"02"+l)
 				b.Write(k)
 				b.Write(p.MarshalBin())
@@ -241,7 +204,6 @@ func DummyMarshal(v *reflect.Value) []byte {
 				}else {
 					bt := DummyMarshal(&field)
 					l := fmt.Sprintf("%08x",len(bt))
-					fmt.Println(l)
 					k,_ := hex.DecodeString(tag+"01"+l)
 					b.Write(k)
 					b.Write(bt)
