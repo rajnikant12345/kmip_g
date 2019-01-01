@@ -231,7 +231,7 @@ func DummyMarshal(v *reflect.Value , tagin string) []byte {
 
 	ty := reflect.TypeOf(v.Elem().Interface())
 
-	fmt.Println(v.Elem().NumField())
+	//fmt.Println(v.Elem().NumField())
 
 	for i := 0; i < v.Elem().NumField(); i++ {
 		field := v.Elem().Field(i)
@@ -268,7 +268,7 @@ func DummyMarshal(v *reflect.Value , tagin string) []byte {
 				if tag == "420008" {
 
 				}else {
-					fmt.Println(field.Kind().String())
+					//fmt.Println(field.Kind().String())
 					var bt []byte
 
 					if field.Kind() == reflect.Slice {
