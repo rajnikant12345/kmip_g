@@ -107,54 +107,74 @@ type CustomAttributeValue struct {
 }
 
 type AttributeValue struct {
-	Uid                            string                          `xml:",omitempty"`
-	Name                           Name                            `xml:",omitempty"`
-	ObjectType                     int                             `xml:",omitempty"` //enum
-	CryptographicAlgo              int                             `xml:",omitempty"` //enum
-	CryptoGraphicLength            int                             `xml:",omitempty"` //enum
-	CryptoParams                   CryptoParams                    `xml:",omitempty"`
-	CryptoDomainParams             CryptoDomainParams              `xml:",omitempty"`
-	CertificateType                int                             `xml:",omitempty"` //enum
-	CertificacteLength             int                             `xml:",omitempty"`
-	X509CertificateId              X509CertificateId               `xml:",omitempty"`
-	X509CertificateSub             X509CertificateSub              `xml:",omitempty"`
-	X509CertificateIssuer          X509CertificateIssuer           `xml:",omitempty"`
-	CertificateId                  CertificateId                   `xml:",omitempty"`
-	CertificateSub                 CertificateSub                  `xml:",omitempty"`
-	CertificateIssuer              CertificateIssuer               `xml:",omitempty"`
-	DigitalSigAlgo                 int                             `xml:",omitempty"` //enum
-	Digest                         Digest                          `xml:",omitempty"`
-	OperationPolicyName            string                          `xml:",omitempty"`
-	CryptoUsageMask                int                             `xml:",omitempty"`
-	LeaseTime                      int                             `xml:",omitempty"` //date
-	UsageLimit                     UsageLimit                      `xml:",omitempty"`
-	State                          int                             `xml:",omitempty"` //enum
-	Initialdate                    int64                           `xml:",omitempty"`
-	Activationdate                 int64                           `xml:",omitempty"`
-	ProcessStartDate               int64                           `xml:",omitempty"`
-	ProcessStopDate                int64                           `xml:",omitempty"`
-	Deactivationdate               int64                           `xml:",omitempty"`
-	DestroyDate                    int64                           `xml:",omitempty"`
-	CompromiseOccuranceDate        int64                           `xml:",omitempty"`
-	CompromiseDate                 int64                           `xml:",omitempty"`
-	RevocationReason               RevocationReason                `xml:",omitempty"`
-	ArchiveDate                    int64                           `xml:",omitempty"`
-	ObjectGroup                    string                          `xml:",omitempty"`
-	Fresh                          int64                           `xml:",omitempty"` //bool
-	Link                           Link                            `xml:",omitempty"`
-	ApplicationSpecificInformation ApplicationSpecificInformation  `xml:",omitempty"`
-	ContactInformation             string                          `xml:",omitempty"`
-	LastChangeDate                 int64                           `xml:",omitempty"`
-	CustomAttribute                map[string]CustomAttributeValue `xml:",omitempty"`
-	AlternativeName                AlternativeName                 `xml:",omitempty"`
-	KeyValuePresent                int64                           `xml:",omitempty"` //bool
-	KeyValueLocation               KeyValueLocation                `xml:",omitempty"`
-	OriginalCreationDate           int64                           `xml:",omitempty"`
+	ApplicationNamespace *kmipbin.KmipTextString
+	ApplicationData		 *kmipbin.KmipByteString
+
+}
+
+type TemplateAttribute struct {
+	Attribute        []*Attribute            `kmip:"420008"`
 }
 
 type Attribute struct {
 	AttributeName  *kmipbin.KmipTextString `kmip:"42000A"`
-	AttributeValue interface{}             `kmip:"42000B" multi:"true"`
+	AttributeValue interface{}          `kmip:"42000B"`
+}
+
+func IsEnum(name kmipbin.KmipTextString) bool {
+	if name == "Cryptographic Algorithm" {
+		return true
+	}
+	return false
+}
+
+func IsInt(name kmipbin.KmipTextString) bool {
+	if name == "Cryptographic Length" ||
+		name == "Cryptographic Usage Mask" {
+		return true
+	}
+	return false
+}
+
+
+func IsBigInt(name kmipbin.KmipTextString) bool {
+	return false
+}
+
+func IsLong(name kmipbin.KmipTextString) bool {
+	return false
+}
+
+
+func IsBoolean(name kmipbin.KmipTextString) bool {
+	return false
+}
+
+
+func IsInterval(name kmipbin.KmipTextString) bool {
+	return false
+}
+
+
+func IsDate(name kmipbin.KmipTextString) bool {
+	if name == "Activation Date" ||
+		name == "Deactivation Date" {
+		return true
+	}
+	return false
+}
+
+
+func IsTextString(name kmipbin.KmipTextString) bool {
+	if name =="Object Group" {
+		return true
+	}
+	return false
+}
+
+
+func IsByteString(name kmipbin.KmipTextString) bool {
+	return false
 }
 
 func (a *Attribute) Unmarshal(bet *[]byte) {
@@ -183,15 +203,83 @@ func (a *Attribute) Unmarshal(bet *[]byte) {
 			b = b[le:]
 			a.AttributeName = &uvi
 		case "42000B":
-			if *a.AttributeName == "Activation Date" || *a.AttributeName == "Deactivation Date" {
+			switch {
+			case IsInt(*a.AttributeName):
+				b = b[8:]
+				a.AttributeValue = new(kmipbin.KmipInt)
+				var k kmipbin.KmipInt
+				k.UnMarshalBin(b)
+				a.AttributeValue = k
+				b = b[8:]
+			case IsDate(*a.AttributeName):
 				b = b[8:]
 				a.AttributeValue = new(kmipbin.KmipDate)
 				var k kmipbin.KmipDate
 				k.UnMarshalBin(b)
 				a.AttributeValue = k
 				b = b[8:]
-			}
+			case IsEnum(*a.AttributeName):
+				b = b[8:]
+				a.AttributeValue = new(kmipbin.KmipEnum)
+				var k kmipbin.KmipEnum
+				k.UnMarshalBin(b)
+				a.AttributeValue = k
+				b = b[8:]
+			case IsLong(*a.AttributeName):
+				b = b[8:]
+				a.AttributeValue = new(kmipbin.KmipLongInt)
+				var k kmipbin.KmipLongInt
+				k.UnMarshalBin(b)
+				a.AttributeValue = k
+				b = b[8:]
+			case IsBoolean(*a.AttributeName):
+				b = b[8:]
+				a.AttributeValue = new(kmipbin.KmipBoolean)
+				var k kmipbin.KmipBoolean
+				k.UnMarshalBin(b)
+				a.AttributeValue = k
+				b = b[8:]
+			case IsInterval(*a.AttributeName):
+				b = b[8:]
+				a.AttributeValue = new(kmipbin.KmipInterval)
+				var k kmipbin.KmipInterval
+				k.UnMarshalBin(b)
+				a.AttributeValue = k
+				b = b[8:]
+			case IsBigInt(*a.AttributeName):
+				var l kmipbin.KmipLength
+				l.UnMarshalBin(b[4:8])
+				b = b[8:]
+				le := kmipbin.PadLength(int(l))
+				a.AttributeValue = new(kmipbin.KmipBigInt)
+				var k kmipbin.KmipBigInt
+				k.UnMarshalBin(b , int(l))
+				a.AttributeValue = k
+				b = b[le:]
+			case IsTextString(*a.AttributeName):
+				var l kmipbin.KmipLength
+				l.UnMarshalBin(b[4:8])
+				b = b[8:]
+				le := kmipbin.PadLength(int(l))
+				a.AttributeValue = new(kmipbin.KmipTextString)
+				var k kmipbin.KmipTextString
+				k.UnMarshalBin(b , int(l))
+				a.AttributeValue = k
+				b = b[le:]
+			case IsByteString(*a.AttributeName):
+				var l kmipbin.KmipLength
+				l.UnMarshalBin(b[4:8])
+				b = b[8:]
+				le := kmipbin.PadLength(int(l))
+				a.AttributeValue = new(kmipbin.KmipByteString)
+				var k kmipbin.KmipByteString
+				k.UnMarshalBin(b , int(l))
+				a.AttributeValue = k
+				b = b[le:]
+			case *a.AttributeName == "Application Specific Information":
+				
 
+			}
 		}
 	}
 
