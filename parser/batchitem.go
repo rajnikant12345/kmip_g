@@ -9,7 +9,7 @@ type BatchItem struct {
 	ResultReason	  *kmipbin.KmipEnum
 	ResultMessage	  *kmipbin.KmipTextString
 	AsynchronousCorrelationValue	*kmipbin.KmipByteString
-	ResponsePayload
+	ResponsePayload		*ResponsePayload
 	RequestPayload    *RequestPayload         `kmip:"420079"`
 	MessageExtension  *MessageExtension       `kmip:"420051"`
 }
