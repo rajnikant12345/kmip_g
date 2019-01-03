@@ -13,3 +13,19 @@ type BatchItem struct {
 	RequestPayload               *RequestPayload   `kmip:"420079"`
 	MessageExtension             *MessageExtension `kmip:"420051"`
 }
+
+
+func (b *BatchItem) GetOperation() *kmipbin.KmipEnum  {
+	return b.Operation
+}
+
+
+func (b *BatchItem) GetUniqueBatchItemID() *kmipbin.KmipByteString  {
+	return b.UniqueBatchItemID
+}
+
+
+func (b *BatchItem) GetRequestPayload() *RequestPayload  {
+	return b.RequestPayload
+}
+

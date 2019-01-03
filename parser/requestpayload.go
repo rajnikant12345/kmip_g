@@ -8,3 +8,23 @@ type RequestPayload struct {
 	Attribute         []*Attribute            `kmip:"420008"`
 	TemplateAttribute *TemplateAttribute      `kmip:"420091"`
 }
+
+
+func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
+	return p.ObjectType
+}
+
+func (p *RequestPayload) GetUniqueIdentifier() *kmipbin.KmipTextString {
+	return p.UniqueIdentifier
+}
+
+func (p *RequestPayload) GetAttributeCount() int {
+	return len(p.Attribute)
+}
+
+func (p *RequestPayload) GetAttributeAt(index int) *Attribute {
+	if p.GetAttributeCount() -1 > index {
+		return nil
+	}
+	return p.Attribute[index]
+}
