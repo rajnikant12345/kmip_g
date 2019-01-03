@@ -6,6 +6,3 @@ type ResponsePayload struct {
 	UniqueIdentifier *kmipbin.KmipTextString `kmip:"420094"`
 	Attribute        []*Attribute            `kmip:"420008"`
 }
-
-
-

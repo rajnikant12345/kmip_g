@@ -6,7 +6,7 @@ type RequestMessage struct {
 }
 
 type KmipStruct struct {
-	RequestMessage *RequestMessage `kmip:"420078"`
+	RequestMessage  *RequestMessage  `kmip:"420078"`
 	ResponseMessage *ResponseMessage `kmip:"42007B"`
 }
 
@@ -16,5 +16,5 @@ type KmipStructResponse struct {
 
 type ResponseMessage struct {
 	ResponseHeader *ResponseHeader `kmip:"42007A"`
-	BatchItem     []*BatchItem   `kmip:"42000F"`
+	BatchItem      []*BatchItem    `kmip:"42000F"`
 }

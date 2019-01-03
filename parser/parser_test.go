@@ -14,11 +14,7 @@ func TestParser(t *testing.T) {
 	b.Write(d)
 	Parser(&b)
 
-
-
 }
-
-
 
 func TestParser_Marshal(t *testing.T) {
 
@@ -28,13 +24,11 @@ func TestParser_Marshal(t *testing.T) {
 	var kk kmipbin.KmipInt
 	kk = kmipbin.KmipInt(7)
 	k.ResponseMessage.ResponseHeader.BatchCount = &kk
-	var gg = kmipbin.KmipByteString{0x40,0x41, 0x40,0x41, 0x40,0x41}
-	k.ResponseMessage.BatchItem = append(k.ResponseMessage.BatchItem , &BatchItem{UniqueBatchItemID:&gg} )
+	var gg = kmipbin.KmipByteString{0x40, 0x41, 0x40, 0x41, 0x40, 0x41}
+	k.ResponseMessage.BatchItem = append(k.ResponseMessage.BatchItem, &BatchItem{UniqueBatchItemID: &gg})
 	b := MarshalAllT(k)
 
 	h := hex.EncodeToString(b)
 	fmt.Println(h)
-
-
 
 }

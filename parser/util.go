@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-
-
 func GetTypeString(value reflect.Value) string {
 	switch value.Type().String() {
 	case "*kmipbin.KmipInt":
@@ -64,7 +62,6 @@ func IsKMIPString(value reflect.Value) bool {
 	return false
 }
 
-
 func UnmaeshalAllT(a *KmipStruct, b []byte) {
 	v := reflect.ValueOf(a)
 
@@ -79,7 +76,7 @@ func UnmaeshalAllT(a *KmipStruct, b []byte) {
 
 }
 
-func ReadKmipInt( f *reflect.Value , bet *[]byte ) {
+func ReadKmipInt(f *reflect.Value, bet *[]byte) {
 	*bet = (*bet)[8:]
 	typ := reflect.TypeOf(f.Interface()).Elem()
 	k := reflect.New(typ)
@@ -88,31 +85,26 @@ func ReadKmipInt( f *reflect.Value , bet *[]byte ) {
 	(*bet) = (*bet)[8:]
 }
 
-func ReadKmipString( f *reflect.Value , bet *[]byte ) {
+func ReadKmipString(f *reflect.Value, bet *[]byte) {
 	var l kmipbin.KmipLength
 	l.UnMarshalBin((*bet)[4:8])
 	*bet = (*bet)[8:]
 	le := kmipbin.PadLength(int(l))
 	typ := reflect.TypeOf(f.Interface()).Elem()
 	k := reflect.New(typ)
-	k.MethodByName("UnMarshalBin").Call([]reflect.Value{reflect.ValueOf((*bet)[:8]),reflect.ValueOf(int(l))})
+	k.MethodByName("UnMarshalBin").Call([]reflect.Value{reflect.ValueOf((*bet)[:8]), reflect.ValueOf(int(l))})
 	*bet = (*bet)[le:]
 	f.Set(k)
 }
 
-
-
 func Dummy(v *reflect.Value, bet *[]byte) {
-
 
 	// this map consisit of mapping between kmip tag and
 	// and a reflect.value
 	tagmap := make(map[string]reflect.Value)
 
-
 	// get the type of element inside v
 	ty := reflect.TypeOf(v.Elem().Interface())
-
 
 	// it must be a struct type, hence all the elements must be iterated and
 	// must be checked against a valid kmip tag
@@ -156,9 +148,9 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 			}
 			// handle primitive kmip types, intbased and string based
 			if IsKmipInt(f) {
-				ReadKmipInt(&f , bet)
+				ReadKmipInt(&f, bet)
 			} else if IsKMIPString(f) {
-				ReadKmipString(&f , bet)
+				ReadKmipString(&f, bet)
 			} else {
 
 				typ := reflect.TypeOf(f.Interface())
@@ -172,11 +164,11 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 					k = reflect.New(tt.Elem())
 					if k.Elem().Kind() != reflect.Struct {
 						if IsKmipInt(k) {
-							ReadKmipInt(&k , bet)
-						}else if IsKMIPString(k) {
-							ReadKmipString(&k , bet)
+							ReadKmipInt(&k, bet)
+						} else if IsKMIPString(k) {
+							ReadKmipString(&k, bet)
 						}
-					}else {
+					} else {
 						Dummy(&k, bet)
 					}
 				} else {
@@ -194,38 +186,32 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 	}
 }
 
-
-
 func MarshalAllT(a *KmipStructResponse) []byte {
 	//ty := reflect.TypeOf(*a)
 	v := reflect.ValueOf(a)
 
 	return DummyMarshal(&v, "")
 
-
 }
 
-func WriteKmipInt(field reflect.Value , tag string, b *bytes.Buffer) {
+func WriteKmipInt(field reflect.Value, tag string, b *bytes.Buffer) {
 	byt := field.MethodByName("MarshalBin").Call(nil)
-	l := fmt.Sprintf("%08x",4)
-	k,_ := hex.DecodeString(tag+GetTypeString(field)+l)
+	l := fmt.Sprintf("%08x", 4)
+	k, _ := hex.DecodeString(tag + GetTypeString(field) + l)
 	b.Write(k)
 	b.Write(byt[0].Bytes())
 }
 
-func WriteKmipString(field reflect.Value , tag string, b *bytes.Buffer) {
+func WriteKmipString(field reflect.Value, tag string, b *bytes.Buffer) {
 	length := len(field.Elem().Bytes())
 	byt := field.MethodByName("MarshalBin").Call(nil)
-	l := fmt.Sprintf("%08x",length)
-	k,_ := hex.DecodeString(tag+GetTypeString(field)+l)
+	l := fmt.Sprintf("%08x", length)
+	k, _ := hex.DecodeString(tag + GetTypeString(field) + l)
 	b.Write(k)
 	b.Write(byt[0].Bytes())
 }
 
-
-
-
-func DummyMarshal(v *reflect.Value , tagin string) []byte {
+func DummyMarshal(v *reflect.Value, tagin string) []byte {
 
 	b := bytes.Buffer{}
 
@@ -240,7 +226,7 @@ func DummyMarshal(v *reflect.Value , tagin string) []byte {
 
 			if IsKmipInt(field) {
 				var tag string
-				if tagin !=  "" {
+				if tagin != "" {
 					tag = tagin
 				} else {
 					tag = ty.Field(i).Tag.Get("kmip")
@@ -248,11 +234,11 @@ func DummyMarshal(v *reflect.Value , tagin string) []byte {
 				if tag == "" {
 					continue
 				}
-				WriteKmipInt(field , tag , &b)
+				WriteKmipInt(field, tag, &b)
 
 			} else if IsKMIPString(field) {
 				var tag string
-				if tagin !=  "" {
+				if tagin != "" {
 					tag = tagin
 				} else {
 					tag = ty.Field(i).Tag.Get("kmip")
@@ -261,34 +247,38 @@ func DummyMarshal(v *reflect.Value , tagin string) []byte {
 					continue
 				}
 
-				WriteKmipString(field , tag , &b)
+				WriteKmipString(field, tag, &b)
 
 			} else {
 				tag := ty.Field(i).Tag.Get("kmip")
 				if tag == "420008" {
-
-				}else {
+					length := field.Len()
+					for i := 0; i < length; i++ {
+						el := field.Index(i).Interface().(*Attribute)
+						b.Write(el.Marshal())
+					}
+				} else {
 					//fmt.Println(field.Kind().String())
 					var bt []byte
 
 					if field.Kind() == reflect.Slice {
 						length := field.Len()
-						for i :=0 ;i<length;i++ {
+						for i := 0; i < length; i++ {
 							el := field.Index(i)
 							if IsKMIPString(el) {
-								WriteKmipInt(el , tag , &b)
+								WriteKmipInt(el, tag, &b)
 							} else if IsKmipInt(el) {
-								WriteKmipString(el , tag , &b)
-							}else {
-								bty :=  DummyMarshal(&el, tag)
+								WriteKmipString(el, tag, &b)
+							} else {
+								bty := DummyMarshal(&el, tag)
 								bt = append(bt, bty...)
 							}
 						}
 						b.Write(bt)
-					}else {
+					} else {
 						bt = DummyMarshal(&field, "")
-						l := fmt.Sprintf("%08x",len(bt))
-						k,_ := hex.DecodeString(tag+"01"+l)
+						l := fmt.Sprintf("%08x", len(bt))
+						k, _ := hex.DecodeString(tag + "01" + l)
 						b.Write(k)
 						b.Write(bt)
 					}
