@@ -25,14 +25,13 @@ type ResponseMessage struct {
 
 func (k *KmipStruct) GetProtocol() *ProtocolVersion {
 	if k.RequestMessage == nil {
-			return nil
+		return nil
 	}
 	if k.RequestMessage.RequestHeader == nil {
 		return nil
 	}
 	return k.RequestMessage.RequestHeader.ProtocolVersion
 }
-
 
 func (k *KmipStruct) GetMaximumResponseSize() *kmipbin.KmipInt {
 	if k.RequestMessage == nil {
@@ -44,7 +43,6 @@ func (k *KmipStruct) GetMaximumResponseSize() *kmipbin.KmipInt {
 	return k.RequestMessage.RequestHeader.MaximumResponseSize
 }
 
-
 func (k *KmipStruct) GetAsynchronousIndicator() *kmipbin.KmipBoolean {
 	if k.RequestMessage == nil {
 		return nil
@@ -54,7 +52,6 @@ func (k *KmipStruct) GetAsynchronousIndicator() *kmipbin.KmipBoolean {
 	}
 	return k.RequestMessage.RequestHeader.AsynchronousIndicator
 }
-
 
 func (k *KmipStruct) GetAttestationCapableIndicator() *kmipbin.KmipBoolean {
 	if k.RequestMessage == nil {
@@ -66,7 +63,6 @@ func (k *KmipStruct) GetAttestationCapableIndicator() *kmipbin.KmipBoolean {
 	return k.RequestMessage.RequestHeader.AttestationCapableIndicator
 }
 
-
 func (k *KmipStruct) GetAttestationType() *kmipbin.KmipEnum {
 	if k.RequestMessage == nil {
 		return nil
@@ -76,7 +72,6 @@ func (k *KmipStruct) GetAttestationType() *kmipbin.KmipEnum {
 	}
 	return k.RequestMessage.RequestHeader.AttestationType
 }
-
 
 func (k *KmipStruct) GetAuthentication() *Authentication {
 	if k.RequestMessage == nil {
@@ -88,7 +83,6 @@ func (k *KmipStruct) GetAuthentication() *Authentication {
 	return k.RequestMessage.RequestHeader.Authentication
 }
 
-
 func (k *KmipStruct) GetBatchErrorContinuationOption() *kmipbin.KmipEnum {
 	if k.RequestMessage == nil {
 		return nil
@@ -98,7 +92,6 @@ func (k *KmipStruct) GetBatchErrorContinuationOption() *kmipbin.KmipEnum {
 	}
 	return k.RequestMessage.RequestHeader.BatchErrorContinuationOption
 }
-
 
 func (k *KmipStruct) GetBatchOrderOption() *kmipbin.KmipBoolean {
 	if k.RequestMessage == nil {
@@ -120,7 +113,6 @@ func (k *KmipStruct) GetBatchCount() *kmipbin.KmipInt {
 	return k.RequestMessage.RequestHeader.BatchCount
 }
 
-
 func (k *KmipStruct) GetTimeStamp() *kmipbin.KmipDate {
 	if k.RequestMessage == nil {
 		return nil
@@ -131,12 +123,11 @@ func (k *KmipStruct) GetTimeStamp() *kmipbin.KmipDate {
 	return k.RequestMessage.RequestHeader.TimeStamp
 }
 
-
 func (k *KmipStruct) GetBatcItem(index int) *BatchItem {
 	if k.RequestMessage == nil {
 		return nil
 	}
-	if index > len(k.RequestMessage.BatchItem) -1 || index < 0 {
+	if index > len(k.RequestMessage.BatchItem)-1 || index < 0 {
 		return nil
 	}
 	return k.RequestMessage.BatchItem[index]
