@@ -9,6 +9,10 @@ type Name struct {
 	NameType  *kmipbin.KmipEnum       `kmip:"420054"`
 }
 
+type Template struct {
+	Attribute []*Attribute `kmip:"420008"`
+}
+
 type TemplateAttribute struct {
 	Name      *Name        `kmip:"420053"`
 	Attribute []*Attribute `kmip:"420008"`

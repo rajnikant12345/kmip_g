@@ -9,6 +9,7 @@ type RequestPayload struct {
 	Attribute                   []*Attribute                 `kmip:"420008"`
 	PublicKeyTemplateAttribute  *PublicKeyTemplateAttribute  `kmip:"42006E"`
 	PrivateKeyTemplateAttribute *PrivateKeyTemplateAttribute `kmip:"420065"`
+	Template                    *Template                    `kmip:"420090"`
 }
 
 func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
