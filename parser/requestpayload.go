@@ -1,15 +1,23 @@
 package parser
 
-import "github.com/rajnikant12345/kmip_g/kmipbin"
+import (
+	"github.com/rajnikant12345/kmip_g/kmipbin"
+)
+
 
 type RequestPayload struct {
-	ObjectType                  *kmipbin.KmipEnum            `kmip:"420057"`
-	UniqueIdentifier            *kmipbin.KmipTextString      `kmip:"420094"`
-	TemplateAttribute           *TemplateAttribute           `kmip:"420091"`
-	Attribute                   []*Attribute                 `kmip:"420008"`
-	PublicKeyTemplateAttribute  *PublicKeyTemplateAttribute  `kmip:"42006E"`
-	PrivateKeyTemplateAttribute *PrivateKeyTemplateAttribute `kmip:"420065"`
-	Template                    *Template                    `kmip:"420090"`
+	ObjectType                   *kmipbin.KmipEnum       `kmip:"420057"`
+	UniqueIdentifier             *kmipbin.KmipTextString `kmip:"420094"`
+	TemplateAttribute            *TemplateAttribute      `kmip:"420091"`
+	Attribute                    []*Attribute            `kmip:"420008"`
+	AsynchronousCorrelationValue *kmipbin.KmipByteString
+	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute  `kmip:"42006E"`
+	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute `kmip:"420065"`
+	Template                     *Template                    `kmip:"420090"`
+	SecretData                   *SecretData                  `kmip:""`
+	PrivateKey					 *PrivateKey
+	PublicKey					 *PublicKey
+	QueryFunction				[]*kmipbin.KmipEnum
 }
 
 func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
