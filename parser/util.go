@@ -146,10 +146,8 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 				fmt.Println(string(a.Data))
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
 				//fmt.Println(f.Interface().([]*Attribute))
-				return
-			}
-			// handle primitive kmip types, intbased and string based
-			if IsKmipInt(f) {
+				//return
+			}else if IsKmipInt(f) {
 				ReadKmipInt(&f, bet)
 			} else if IsKMIPString(f) {
 				ReadKmipString(&f, bet)
