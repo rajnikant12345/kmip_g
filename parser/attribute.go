@@ -5,11 +5,21 @@ import (
 )
 
 type Name struct {
-	NameValue kmipbin.KmipTextString `kmip:"420055"`
-	NameType  kmipbin.KmipEnum       `kmip:"420054"`
+	NameValue *kmipbin.KmipTextString `kmip:"420055"`
+	NameType  *kmipbin.KmipEnum       `kmip:"420054"`
 }
 
 type TemplateAttribute struct {
+	Name      *Name        `kmip:"420053"`
+	Attribute []*Attribute `kmip:"420008"`
+}
+
+type PublicKeyTemplateAttribute struct {
+	Name      *Name        `kmip:"420053"`
+	Attribute []*Attribute `kmip:"420008"`
+}
+
+type PrivateKeyTemplateAttribute struct {
 	Name      *Name        `kmip:"420053"`
 	Attribute []*Attribute `kmip:"420008"`
 }

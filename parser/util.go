@@ -143,7 +143,9 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 
 				a := &Attribute{}
 				a.Unmarshal(bet)
+				fmt.Println(string(a.Data))
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
+				//fmt.Println(f.Interface().([]*Attribute))
 				return
 			}
 			// handle primitive kmip types, intbased and string based
@@ -154,6 +156,7 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 			} else {
 
 				typ := reflect.TypeOf(f.Interface())
+				fmt.Println(typ.String())
 				(*bet) = (*bet)[8:]
 				if typ.Kind() == reflect.Ptr {
 					typ = reflect.TypeOf(f.Interface()).Elem()

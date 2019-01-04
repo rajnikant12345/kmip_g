@@ -2,7 +2,7 @@ package kmipbin
 
 import (
 	"encoding/binary"
-	"github.com/pkg/errors"
+	"errors"
 	"math/big"
 )
 

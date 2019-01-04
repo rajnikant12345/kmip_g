@@ -3,12 +3,13 @@ package parser
 import "github.com/rajnikant12345/kmip_g/kmipbin"
 
 type RequestPayload struct {
-	ObjectType        *kmipbin.KmipEnum       `kmip:"420057"`
-	UniqueIdentifier  *kmipbin.KmipTextString `kmip:"420094"`
-	Attribute         []*Attribute            `kmip:"420008"`
-	TemplateAttribute *TemplateAttribute      `kmip:"420091"`
+	ObjectType                  *kmipbin.KmipEnum            `kmip:"420057"`
+	UniqueIdentifier            *kmipbin.KmipTextString      `kmip:"420094"`
+	TemplateAttribute           *TemplateAttribute           `kmip:"420091"`
+	Attribute                   []*Attribute                 `kmip:"420008"`
+	PublicKeyTemplateAttribute  *PublicKeyTemplateAttribute  `kmip:"42006E"`
+	PrivateKeyTemplateAttribute *PrivateKeyTemplateAttribute `kmip:"420065"`
 }
-
 
 func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
 	return p.ObjectType
@@ -23,7 +24,7 @@ func (p *RequestPayload) GetAttributeCount() int {
 }
 
 func (p *RequestPayload) GetAttributeAt(index int) *Attribute {
-	if p.GetAttributeCount() -1 > index {
+	if p.GetAttributeCount()-1 > index {
 		return nil
 	}
 	return p.Attribute[index]
