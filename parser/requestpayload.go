@@ -18,6 +18,8 @@ type RequestPayload struct {
 	PrivateKey					 *PrivateKey
 	PublicKey					 *PublicKey
 	QueryFunction				[]*kmipbin.KmipEnum
+	//////test///////
+	Issuer						[]*kmipbin.KmipTextString
 }
 
 func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
