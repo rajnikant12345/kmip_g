@@ -319,7 +319,6 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				} else {
 					//fmt.Println(field.Kind().String())
 					var bt []byte
-
 					if field.Kind() == reflect.Slice {
 						length := field.Len()
 						for i := 0; i < length; i++ {

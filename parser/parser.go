@@ -20,6 +20,28 @@ func Parser(rw io.ReadWriter) {
 
 	fmt.Println(string(x))
 
+	v := DataAttributesKmip{}
+
+	if r.GetBatcItem(0).GetRequestPayload().TemplateAttribute != nil {
+		for i:=0;i<len(r.GetBatcItem(0).GetRequestPayload().TemplateAttribute.Attribute);i++ {
+			v.Unpack(r.GetBatcItem(0).GetRequestPayload().TemplateAttribute.Attribute[i].Data)
+		}
+
+	}
+	for i:=0;i<len(r.GetBatcItem(0).GetRequestPayload().Attribute);i++ {
+		v.Unpack(r.GetBatcItem(0).GetRequestPayload().Attribute[i].Data)
+	}
+
+	if r.GetBatcItem(0).GetRequestPayload().Template != nil {
+		for i:=0;i<len(r.GetBatcItem(0).GetRequestPayload().Template.Attribute);i++ {
+			v.Unpack(r.GetBatcItem(0).GetRequestPayload().Template.Attribute[i].Data)
+		}
+
+	}
+
+
+
+
 	//r1 := RequestHeader{}
 
 	//UnmaeshalAll(r1, nil)

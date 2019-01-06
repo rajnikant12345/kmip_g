@@ -50,6 +50,7 @@ func TestKyBlocl(t *testing.T) {
 	Parser(&b)
 }
 
+/*
 func TestStringArray(t *testing.T) {
 	k := &KmipStruct{}
 	k.RequestMessage = &RequestMessage{}
@@ -57,17 +58,16 @@ func TestStringArray(t *testing.T) {
 	var kk kmipbin.KmipInt
 	kk = kmipbin.KmipInt(7)
 	k.RequestMessage.RequestHeader.BatchCount = &kk
-	var gg = kmipbin.KmipByteString{0x40, 0x41, 0x40, 0x41, 0x40, 0x41}
 	bitem := &BatchItem{}
 	bitem.RequestPayload = &RequestPayload{}
 
-	issuer1 := kmipbin.KmipTextString("123456")
-	issuer2 := kmipbin.KmipTextString("654321")
+	//issuer1 := kmipbin.KmipTextString("123456")
+	//issuer2 := kmipbin.KmipTextString("654321")
 
-	bitem.RequestPayload.Issuer = append(bitem.RequestPayload.Issuer , &issuer1 , &issuer2)
+	//bitem.RequestPayload.Issuer = append(bitem.RequestPayload.Issuer , &issuer1 , &issuer2)
 
 
-	k.RequestMessage.BatchItem = append(k.RequestMessage.BatchItem, &BatchItem{UniqueBatchItemID: &gg}, bitem)
+	k.RequestMessage.BatchItem = append(k.RequestMessage.BatchItem, bitem)
 
 
 	b := MarshalAllRequest(k)
@@ -80,6 +80,7 @@ func TestStringArray(t *testing.T) {
 	b1.Write(d)
 	Parser(&b1)
 }
+*/
 
 
 

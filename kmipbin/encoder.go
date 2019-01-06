@@ -18,6 +18,16 @@ type KmipTagType struct {
 	Type uint32
 }
 
+type BaseMarshal interface {
+	UnMarshalBin([]byte) error
+	MarshalBin() []byte
+}
+
+type BaseMarshalString interface {
+	UnMarshalBin([]byte , int) error
+	MarshalBin() []byte
+}
+
 func (k *KmipTagType) UnMarshalBin(b []byte) error {
 	if len(b) != 4 {
 		return errors.New("Invalid Kmip Tag")

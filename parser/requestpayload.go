@@ -6,20 +6,18 @@ import (
 
 
 type RequestPayload struct {
-	ObjectType                   *kmipbin.KmipEnum       `kmip:"420057"`
-	UniqueIdentifier             *kmipbin.KmipTextString `kmip:"420094"`
-	TemplateAttribute            *TemplateAttribute      `kmip:"420091"`
-	Attribute                    []*Attribute            `kmip:"420008"`
+	ObjectType                   *kmipbin.KmipEnum
+	UniqueIdentifier             *kmipbin.KmipTextString
+	TemplateAttribute            *TemplateAttribute
+	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
-	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute  `kmip:"42006E"`
-	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute `kmip:"420065"`
-	Template                     *Template                    `kmip:"420090"`
-	SecretData                   *SecretData                  `kmip:""`
+	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
+	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
+	Template                     *Template
+	SecretData                   *SecretData
 	PrivateKey					 *PrivateKey
 	PublicKey					 *PublicKey
 	QueryFunction				[]*kmipbin.KmipEnum
-	//////test///////
-	Issuer						[]*kmipbin.KmipTextString
 }
 
 func (p *RequestPayload) GetObjectType() *kmipbin.KmipEnum {
@@ -30,7 +28,20 @@ func (p *RequestPayload) GetUniqueIdentifier() *kmipbin.KmipTextString {
 	return p.UniqueIdentifier
 }
 
+func (p *RequestPayload) GetTempleteAttribute() *TemplateAttribute {
+	return p.TemplateAttribute
+}
+
+func (p *RequestPayload) GetTemplete() *Template {
+	return p.Template
+}
+
 func (p *RequestPayload) GetAttributeCount() int {
+	return len(p.Attribute)
+}
+
+func (p *RequestPayload) GetTempleteAttributeCount() int {
+
 	return len(p.Attribute)
 }
 
