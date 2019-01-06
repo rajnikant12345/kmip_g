@@ -4,10 +4,9 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 )
 
-type Attribute struct {
-	AttributeName  *kmipbin.KmipTextString
-	AttributeIndex *kmipbin.KmipInt
-	AttributeValue interface{}
+type X509CertificateIdentifier struct {
+	IssuerDistinguishedName *kmipbin.KmipByteString
+	CertificateSerialNumber	*kmipbin.KmipByteString
 }
 
 type Name struct {
@@ -18,6 +17,11 @@ type Name struct {
 type Nonce struct {
 	NonceID    *kmipbin.KmipByteString
 	NonceValue *kmipbin.KmipByteString
+}
+
+type CryptographicDomainParameters struct {
+	Qlength          *kmipbin.KmipInt
+	RecommendedCurve *kmipbin.KmipEnum
 }
 
 type CredentialValue struct {
@@ -160,6 +164,21 @@ type TransparentECMQVPublicKey struct {
 	QString          *kmipbin.KmipByteString
 }
 
+type PrivateKeyTemplateAttribute struct {
+	Name      *Name
+	Attribute *Attribute
+}
+
+type PublicKeyTemplateAttribute struct {
+	Name      *Name
+	Attribute *Attribute
+}
+
+type CommonTemplateAttribute struct {
+	Name      *Name
+	Attribute *Attribute
+}
+
 type TemplateAttribute struct {
 	Name      *Name
 	Attribute *Attribute
@@ -170,4 +189,3 @@ type ExtensionInformation struct {
 	ExtensionTag  *kmipbin.KmipInt
 	ExtensionType *kmipbin.KmipInt
 }
-
