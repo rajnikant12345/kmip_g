@@ -1,4 +1,4 @@
-package base_objects
+package objects
 
 import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
@@ -91,10 +91,83 @@ type EncryptionKeyInformation struct {
 }
 
 type KeyWrappingSpecification struct {
-	WrappingMethod *kmipbin.KmipEnum
-	EncryptionKeyInformation *EncryptionKeyInformation
+	WrappingMethod             *kmipbin.KmipEnum
+	EncryptionKeyInformation   *EncryptionKeyInformation
 	MACSignatureKeyInformation *MACSignatureKeyInformation
-	AttributeName	*kmipbin.KmipTextString
-	EncodingOption	*kmipbin.KmipEnum
+	AttributeName              *kmipbin.KmipTextString
+	EncodingOption             *kmipbin.KmipEnum
+}
+
+type TransparentSymmetricKey struct {
+	Key *kmipbin.KmipByteString
+}
+
+type TransparentDSAPrivateKey struct {
+	P, Q, G, X *kmipbin.KmipBigInt
+}
+
+type TransparentDSAPublicKey struct {
+	P, Q, G, Y *kmipbin.KmipBigInt
+}
+
+type TransparentRSAPrivateKey struct {
+	Modulus, PrivateExponent       *kmipbin.KmipBigInt
+	PublicExponent, p, Q           *kmipbin.KmipBigInt
+	PrimeExponentP, PrimeExponentQ *kmipbin.KmipBigInt
+	CRTCoefficient                 *kmipbin.KmipBigInt
+}
+
+type TransparentRSAPublicKey struct {
+	Modulus        *kmipbin.KmipBigInt
+	PublicExponent *kmipbin.KmipBigInt
+}
+
+type TransparentDHPrivateKey struct {
+	P, Q, G, J, X *kmipbin.KmipBigInt
+}
+
+type TransparentDHPublicKey struct {
+	P, Q, G, J, Y *kmipbin.KmipBigInt
+}
+
+type TransparentECDSAPrivateKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	D                *kmipbin.KmipBigInt
+}
+
+type TransparentECDSAPublicKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	QString          *kmipbin.KmipByteString
+}
+
+type TransparentECDHPrivateKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	D                *kmipbin.KmipBigInt
+}
+
+type TransparentECDHPublicKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	QString          *kmipbin.KmipByteString
+}
+
+type TransparentECMQVPrivateKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	D                *kmipbin.KmipBigInt
+}
+
+type TransparentECMQVPublicKey struct {
+	RecommendedCurve *kmipbin.KmipEnum
+	QString          *kmipbin.KmipByteString
+}
+
+type TemplateAttribute struct {
+	Name      *Name
+	Attribute *Attribute
+}
+
+type ExtensionInformation struct {
+	ExtensionName *kmipbin.KmipTextString
+	ExtensionTag  *kmipbin.KmipInt
+	ExtensionType *kmipbin.KmipInt
 }
 
