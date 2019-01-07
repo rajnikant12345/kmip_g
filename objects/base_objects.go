@@ -6,7 +6,32 @@ import (
 
 type X509CertificateIdentifier struct {
 	IssuerDistinguishedName *kmipbin.KmipByteString
-	CertificateSerialNumber	*kmipbin.KmipByteString
+	CertificateSerialNumber *kmipbin.KmipByteString
+}
+
+type X509CertificateSubject struct {
+	SubjectDistinguishedName *kmipbin.KmipByteString
+	SubjectAlternativeName   *kmipbin.KmipByteString
+}
+
+type X509CertificateIssuer struct {
+	IssuerDistinguishedName *kmipbin.KmipByteString
+	IssuerAlternativeName   *kmipbin.KmipByteString
+}
+
+type CertificateIdentifier struct {
+	Issuer       *kmipbin.KmipTextString
+	SerialNumber *kmipbin.KmipTextString
+}
+
+type CertificateSubject struct {
+	CertificateSubjectDistinguishedName *kmipbin.KmipTextString
+	CertificateSubjectAlternativeName   *kmipbin.KmipTextString
+}
+
+type CertificateIssuer struct {
+	CertificateIssuerDistinguishedName *kmipbin.KmipTextString
+	CertificateIssuerAlternativeName   *kmipbin.KmipTextString
 }
 
 type Name struct {
@@ -188,4 +213,41 @@ type ExtensionInformation struct {
 	ExtensionName *kmipbin.KmipTextString
 	ExtensionTag  *kmipbin.KmipInt
 	ExtensionType *kmipbin.KmipInt
+}
+
+type Digest struct {
+	HashingAlgorithm *kmipbin.KmipEnum
+	DigestValue      *kmipbin.KmipByteString
+	KeyFormatType    *kmipbin.KmipEnum
+}
+
+type UsageLimits struct {
+	UsageLimitsTotal	*kmipbin.KmipLongInt
+	UsageLimitsCount	*kmipbin.KmipLongInt
+	UsageLimitsUnit		*kmipbin.KmipEnum
+}
+
+type RevocationReason struct {
+	RevocationReasonCode *kmipbin.KmipEnum
+	RevocationMessage    *kmipbin.KmipTextString
+}
+
+type Link struct {
+	LinkType               *kmipbin.KmipEnum
+	LinkedObjectIdentifier *kmipbin.KmipTextString
+}
+
+type ApplicationSpecificInformation struct {
+	ApplicationNamespace *kmipbin.KmipTextString
+	ApplicationData      *kmipbin.KmipTextString
+}
+
+type AlternativeName struct {
+	AlternativeNameValue *kmipbin.KmipTextString
+	AlternativeNameType  *kmipbin.KmipEnum
+}
+
+type KeyValueLocation struct {
+	KeyValueLocationValue	*kmipbin.KmipTextString
+	KeyValueLocationType	*kmipbin.KmipEnum
 }
