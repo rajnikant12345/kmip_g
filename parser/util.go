@@ -129,6 +129,13 @@ func ReadKmipString(f *reflect.Value, bet *[]byte) {
 	f.Set(k)
 }
 
+func AttrMarshal(in interface{} , b []byte) {
+	v := reflect.ValueOf(in)
+	Dummy(&v , &b)
+
+}
+
+
 func Dummy(v *reflect.Value, bet *[]byte) {
 
 	// this map consisit of mapping between kmip tag and
@@ -167,13 +174,30 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 			return
 		} else {
 			// handle attribute separate as it comes with many flavours
-			if tag == "420040" {
-				a := &objects.KeyBlock{}
-				a.Unmarshal(bet)
-				f.Set(reflect.ValueOf(a))
-			}else if tag == "420008" {
+			if tag == "420045" {
+				if hex.EncodeToString((*bet)[3:4]) != "01" {
+					fmt.Println("byte string key block")
+					f = reflect.ValueOf(new(kmipbin.KmipByteString)).Elem()
+				}else {
+					fmt.Println("key value in key block")
+					f = reflect.ValueOf(new(objects.KeyValue))
+				}
+				fmt.Println(f.Kind().String())
+			}
+
+			if tag == "420043" {
+				if hex.EncodeToString((*bet)[3:4]) != "01" {
+					fmt.Println("420043 byte string")
+					f = reflect.ValueOf(new(kmipbin.KmipByteString))
+				}else {
+					//f = reflect.ValueOf(new(objects.KeyValue))
+				}
+				fmt.Println(f.Kind().String())
+			}
+
+			if tag == "420008" {
 				a := &objects.Attribute{}
-				a.Unmarshal(bet)
+				a.Unmarshal( bet , AttrMarshal  )
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
 			} else if IsKmipInt(f) {
 				ReadKmipInt(&f, bet)

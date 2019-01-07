@@ -78,6 +78,22 @@ type KeyBlock struct {
 	RawData				   []byte
 }
 
+
+func (k *KeyBlock) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
+	var l kmipbin.KmipLength
+	l.UnMarshalBin((*bet)[4:8])
+	le := kmipbin.PadLength(int(l))
+	////////////////////////////////////////////
+
+	k.RawData = make([]byte, 8+le)
+	copy(k.RawData, (*bet)[:8+le])
+
+	/////////////////////////////////////////////
+	*bet = (*bet)[8+le:]
+}
+
+
+
 type KeyValue struct {
 	KeyMaterial interface{}
 	Attribute   *[]Attribute
@@ -257,17 +273,4 @@ type DerivationParameters struct {
 	CryptographicParameters *CryptographicParameters
 	InitializationVector	*kmipbin.KmipByteString
 	DerivationData			*kmipbin.KmipByteString
-}
-
-func (k *KeyBlock) Unmarshal(bet *[]byte) {
-	var l kmipbin.KmipLength
-	l.UnMarshalBin((*bet)[4:8])
-	le := kmipbin.PadLength(int(l))
-	////////////////////////////////////////////
-
-	k.RawData = make([]byte, 8+le)
-	copy(k.RawData, (*bet)[:8+le])
-
-	/////////////////////////////////////////////
-	*bet = (*bet)[8+le:]
 }

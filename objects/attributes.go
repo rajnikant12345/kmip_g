@@ -5,14 +5,14 @@ import (
 	"strings"
 	//"fmt"
 	//"reflect"
-	"fmt"
 )
 
 type Attribute struct {
 	AttributeName  *kmipbin.KmipTextString
 	AttributeIndex *kmipbin.KmipInt
 	AttributeValue interface{}
-	data []byte
+	Data           []byte
+	function       func(interface{} , []byte)
 }
 
 
@@ -87,10 +87,10 @@ func (a *Attribute) Unpack(b []byte) {
 		}else {
 			a.AttributeValue.(kmipbin.BaseMarshalString).UnMarshalBin(b[:le] , int(l))
 			b = b[le:]
-			fmt.Println(*a.AttributeName)
+			//fmt.Println(*a.AttributeName)
 		}
 	default:
-
+		a.function(a.AttributeValue , b)
 	}
 
 	b = b[len(b):]
@@ -98,27 +98,29 @@ func (a *Attribute) Unpack(b []byte) {
 }
 
 
-func (a *Attribute) Unmarshal(bet *[]byte) {
+func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	var l kmipbin.KmipLength
 	l.UnMarshalBin((*bet)[4:8])
 	le := kmipbin.PadLength(int(l))
 	////////////////////////////////////////////
 
-	a.data = make([]byte, 8+le)
-	copy(a.data, (*bet)[:8+le])
+	a.Data = make([]byte, 8+le)
+	copy(a.Data, (*bet)[:8+le])
 
 	/////////////////////////////////////////////
 	*bet = (*bet)[8+le:]
 
 	/////////////////////////////////////////////////////
-	a.Unpack(a.data)
+	a.function = f
+
+	a.Unpack(a.Data)
 }
 
 func (a *Attribute) Marshal() []byte {
-	size := len(a.data)
+	size := len(a.Data)
 	tmp := make([]byte, size)
 	// remove extra copy id not needed
-	copy(tmp, a.data)
+	copy(tmp, a.Data)
 	return tmp
 }
 
