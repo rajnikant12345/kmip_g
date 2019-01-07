@@ -75,7 +75,6 @@ type KeyBlock struct {
 	CryptographicAlgorithm *kmipbin.KmipEnum
 	CryptographicLength    *kmipbin.KmipInt
 	KeywrappingData        *KeyWrappingData
-	RawData				   []byte
 }
 
 
@@ -85,8 +84,8 @@ func (k *KeyBlock) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	le := kmipbin.PadLength(int(l))
 	////////////////////////////////////////////
 
-	k.RawData = make([]byte, 8+le)
-	copy(k.RawData, (*bet)[:8+le])
+//	k.RawData = make([]byte, 8+le)
+//	copy(k.RawData, (*bet)[:8+le])
 
 	/////////////////////////////////////////////
 	*bet = (*bet)[8+le:]

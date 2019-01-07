@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"github.com/rajnikant12345/kmip_g/objects"
 	"reflect"
 	"strings"
-	"github.com/rajnikant12345/kmip_g/objects"
 )
 
 func GetTypeString(value reflect.Value) string {
@@ -153,6 +153,7 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 
 		tag := Tags[ty.Field(i).Name]
 
+
 		if tag != "" {
 			tagmap[tag] = field
 		}
@@ -176,23 +177,29 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 			// handle attribute separate as it comes with many flavours
 			if tag == "420045" {
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
-					fmt.Println("byte string key block")
-					f = reflect.ValueOf(new(kmipbin.KmipByteString)).Elem()
+					p := new(kmipbin.KmipByteString)
+					h := reflect.ValueOf(&p).Elem()
+					ReadKmipString(&h, bet)
+					k := reflect.ValueOf(h.Interface())
+					f.Set(k)
+					continue
 				}else {
-					fmt.Println("key value in key block")
-					f = reflect.ValueOf(new(objects.KeyValue))
+					p := new(objects.KeyValue)
+					f.Set(reflect.ValueOf(&p).Elem())
 				}
-				fmt.Println(f.Kind().String())
 			}
 
 			if tag == "420043" {
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
-					fmt.Println("420043 byte string")
-					f = reflect.ValueOf(new(kmipbin.KmipByteString))
+					p := new(kmipbin.KmipByteString)
+					h := reflect.ValueOf(&p).Elem()
+					ReadKmipString(&h, bet)
+					k := reflect.ValueOf(h.Interface())
+					f.Set(k)
+					continue
 				}else {
 					//f = reflect.ValueOf(new(objects.KeyValue))
 				}
-				fmt.Println(f.Kind().String())
 			}
 
 			if tag == "420008" {

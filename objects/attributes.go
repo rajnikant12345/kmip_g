@@ -11,10 +11,9 @@ type Attribute struct {
 	AttributeName  *kmipbin.KmipTextString
 	AttributeIndex *kmipbin.KmipInt
 	AttributeValue interface{}
-	Data           []byte
+	data           []byte
 	function       func(interface{} , []byte)
 }
-
 
 func MakeType(val uint32) interface{} {
 
@@ -104,8 +103,8 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	le := kmipbin.PadLength(int(l))
 	////////////////////////////////////////////
 
-	a.Data = make([]byte, 8+le)
-	copy(a.Data, (*bet)[:8+le])
+	a.data = make([]byte, 8+le)
+	copy(a.data, (*bet)[:8+le])
 
 	/////////////////////////////////////////////
 	*bet = (*bet)[8+le:]
@@ -113,14 +112,14 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	/////////////////////////////////////////////////////
 	a.function = f
 
-	a.Unpack(a.Data)
+	a.Unpack(a.data)
 }
 
 func (a *Attribute) Marshal() []byte {
-	size := len(a.Data)
+	size := len(a.data)
 	tmp := make([]byte, size)
 	// remove extra copy id not needed
-	copy(tmp, a.Data)
+	copy(tmp, a.data)
 	return tmp
 }
 
