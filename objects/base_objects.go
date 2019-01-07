@@ -70,7 +70,7 @@ type Credential struct {
 
 type KeyBlock struct {
 	KeyFormatType          *kmipbin.KmipEnum
-	KeyCompressionTypem    *kmipbin.KmipEnum
+	KeyCompressionType    *kmipbin.KmipEnum
 	KeyValue               interface{}
 	CryptographicAlgorithm *kmipbin.KmipEnum
 	CryptographicLength    *kmipbin.KmipInt

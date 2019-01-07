@@ -258,12 +258,8 @@ func WriteKmipString(field reflect.Value, tag string, b *bytes.Buffer) {
 }
 
 func DummyMarshal(v *reflect.Value, tagin string) []byte {
-
 	b := bytes.Buffer{}
-
 	ty := reflect.TypeOf(v.Elem().Interface())
-
-	//fmt.Println(v.Elem().NumField())
 
 	for i := 0; i < v.Elem().NumField(); i++ {
 		field := v.Elem().Field(i)
@@ -275,9 +271,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				if tagin != "" {
 					tag = tagin
 				} else {
-					//tag = ty.Field(i).Tag.Get("kmip")
 					tag = Tags[ty.Field(i).Name]
-					//fmt.Println(tag , ty.Field(i).Name)
 				}
 				if tag == "" {
 					continue
@@ -289,9 +283,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				if tagin != "" {
 					tag = tagin
 				} else {
-					//tag =p ty.Field(i).Tag.Get("kmip")
 					tag = Tags[ty.Field(i).Name]
-					//fmt.Println(tag , ty.Field(i).Name)
 				}
 				if tag == "" {
 					continue
@@ -301,7 +293,6 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 
 			} else {
 				tag := Tags[ty.Field(i).Name]
-				//fmt.Println(tag , ty.Field(i).Name)
 				if tag == "420008" {
 					length := field.Len()
 					for i := 0; i < length; i++ {
@@ -309,7 +300,6 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 						b.Write(el.Marshal())
 					}
 				} else {
-					//fmt.Println(field.Kind().String())
 					var bt []byte
 					if field.Kind() == reflect.Slice {
 						length := field.Len()
