@@ -251,3 +251,11 @@ type KeyValueLocation struct {
 	KeyValueLocationValue	*kmipbin.KmipTextString
 	KeyValueLocationType	*kmipbin.KmipEnum
 }
+
+type DerivationParameters struct {
+	CryptographicParameters *CryptographicParameters
+	InitializationVector	*kmipbin.KmipByteString
+	DerivationData			*kmipbin.KmipByteString
+}
+
+
