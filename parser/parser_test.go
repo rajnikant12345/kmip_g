@@ -3,8 +3,8 @@ package parser
 import (
 	"bytes"
 	"encoding/hex"
-	"fmt"
-	"github.com/rajnikant12345/kmip_g/kmipbin"
+	//"fmt"
+	//"github.com/rajnikant12345/kmip_g/kmipbin"
 	"testing"
 )
 
@@ -83,7 +83,7 @@ func TestStringArray(t *testing.T) {
 */
 
 
-
+/*
 func TestParser_Marshal(t *testing.T) {
 
 	k := &KmipStructResponse{}
@@ -99,4 +99,4 @@ func TestParser_Marshal(t *testing.T) {
 	h := hex.EncodeToString(b)
 	fmt.Println(h)
 
-}
+}*/

@@ -3,8 +3,8 @@ package objects
 import "github.com/rajnikant12345/kmip_g/kmipbin"
 
 type MapValue struct {
-	val string
-	f   func() interface{}
+	Val string
+	F   func() interface{}
 }
 
 func intVal() interface{} {

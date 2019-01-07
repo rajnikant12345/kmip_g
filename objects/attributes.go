@@ -3,15 +3,124 @@ package objects
 import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"strings"
+	//"fmt"
+	//"reflect"
+	"fmt"
 )
 
 type Attribute struct {
 	AttributeName  *kmipbin.KmipTextString
 	AttributeIndex *kmipbin.KmipInt
 	AttributeValue interface{}
+	Data []byte
 }
 
 
+func MakeType(val uint32) interface{} {
+
+	switch val {
+	case 2:
+		return new(kmipbin.KmipInt)
+	case 3:
+		return new(kmipbin.KmipLongInt)
+	case 4:
+		return new(kmipbin.KmipBigInt)
+	case 5:
+		return new(kmipbin.KmipEnum)
+	case 6:
+		return new(kmipbin.KmipBoolean)
+	case 7:
+		return new(kmipbin.KmipTextString)
+	case 8:
+		return new(kmipbin.KmipByteString)
+	case 9:
+		return new(kmipbin.KmipDate)
+	case 10:
+		return new(kmipbin.KmipInterval)
+	}
+
+	return nil
+}
+
+
+func (a *Attribute) Unpack(b []byte) {
+	b = b[8:]
+	//for {
+	if len(b) <= 0 {
+		return
+	}
+	tty := kmipbin.KmipTagType{}
+	var l kmipbin.KmipLength
+	l.UnMarshalBin(b[4:8])
+	le := kmipbin.PadLength(int(l))
+	b = b[8:]
+	var AttributeName kmipbin.KmipTextString
+	AttributeName.UnMarshalBin(b[:le],int(l))
+	a.AttributeName = &AttributeName
+	b = b[le:]
+
+	/////
+
+	tty.UnMarshalBin(b[:4])
+	l.UnMarshalBin(b[4:8])
+	le = kmipbin.PadLength(int(l))
+	b = b[8:]
+
+	a.CreateAttribute()
+
+	switch tty.Type {
+	case 2,3,5,6,9,10:
+		if strings.HasPrefix(string(*a.AttributeName),"x-") {
+			val := MakeType(tty.Type).(kmipbin.BaseMarshal)
+			val.UnMarshalBin(b[:le])
+			a.AttributeValue = val
+		}else {
+			a.AttributeValue.(kmipbin.BaseMarshal).UnMarshalBin(b)
+			b = b[le:]
+		}
+
+	case 4,7,8:
+		if strings.HasPrefix(string(*a.AttributeName),"x-") {
+			var str kmipbin.KmipTextString
+			str.UnMarshalBin(b[:le] , int(l))
+			a.AttributeValue = &str
+		}else {
+			a.AttributeValue.(kmipbin.BaseMarshalString).UnMarshalBin(b[:le] , int(l))
+			b = b[le:]
+			fmt.Println(*a.AttributeName)
+		}
+	default:
+		
+	}
+
+	b = b[len(b):]
+	//}
+}
+
+
+func (a *Attribute) Unmarshal(bet *[]byte) {
+	var l kmipbin.KmipLength
+	l.UnMarshalBin((*bet)[4:8])
+	le := kmipbin.PadLength(int(l))
+	////////////////////////////////////////////
+
+	a.Data = make([]byte, 8+le)
+	copy(a.Data, (*bet)[:8+le])
+
+	/////////////////////////////////////////////
+	*bet = (*bet)[8+le:]
+
+	/////////////////////////////////////////////////////
+	a.Unpack(a.Data)
+}
+
+func (a *Attribute) Marshal() []byte {
+	size := len(a.Data)
+	tmp := make([]byte, size)
+	// remove extra copy id not needed
+	copy(tmp, a.Data)
+	return tmp
+}
 
 func (a *Attribute) CreateAttribute() {
 
@@ -115,7 +224,7 @@ func (a *Attribute) CreateAttribute() {
 		a.AttributeValue = new(kmipbin.KmipDate)
 	}
 	if *a.AttributeName == "Object Group" {
-		a.AttributeValue = new(kmipbin.KmipEnum)
+		a.AttributeValue = new(kmipbin.KmipTextString)
 	}
 	if *a.AttributeName == "Fresh" {
 		a.AttributeValue = new(kmipbin.KmipBoolean)
@@ -132,9 +241,9 @@ func (a *Attribute) CreateAttribute() {
 	if *a.AttributeName == "Last Change Date" {
 		a.AttributeValue = new(kmipbin.KmipDate)
 	}
-	if strings.HasPrefix(string(*a.AttributeName),"x-") {
-		a.AttributeValue = make([]byte,0)
-	}
+	/*if strings.HasPrefix(string(*a.AttributeName),"x-") {
+		a.AttributeValue = make([]byte,1000)
+	}*/
 	if *a.AttributeName == "Alternative Name" {
 		a.AttributeValue = new(AlternativeName)
 	}

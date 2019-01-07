@@ -7,6 +7,7 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"reflect"
 	"strings"
+	"github.com/rajnikant12345/kmip_g/objects"
 )
 
 func GetTypeString(value reflect.Value) string {
@@ -140,32 +141,23 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 	// it must be a struct type, hence all the elements must be iterated and
 	// must be checked against a valid kmip tag
 	for i := 0; i < v.Elem().NumField(); i++ {
-		// het the field at index
-		field := v.Elem().Field(i)
 
-		// get the kmip tag value
-		//tag1 := ty.Field(i).Tag.Get("kmip")
+		field := v.Elem().Field(i)
 
 		tag := Tags[ty.Field(i).Name]
 
-		//fmt.Println(tag , ":",tag1 )
-
-		// if it's a valid kmip element then , add it to tagmap
 		if tag != "" {
 			tagmap[tag] = field
-			//fmt.Println(ty.Field(i).Name)
 		}
 	}
 
 	// this loop is infinite as we will be iterating till we reach end of input buffer
 	// or an unwanted element is encountered.
 	for {
-
 		// check the length of input buffer
 		if len((*bet)) < 8 {
 			break
 		}
-
 		// get the tag from buffer
 		tag := strings.ToUpper(hex.EncodeToString((*bet)[:3]))
 
@@ -176,11 +168,11 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 		} else {
 			// handle attribute separate as it comes with many flavours
 			if tag == "420040" {
-				a := &KeyBlock{}
+				a := &objects.KeyBlock{}
 				a.Unmarshal(bet)
 				f.Set(reflect.ValueOf(a))
 			}else if tag == "420008" {
-				a := &Attribute{}
+				a := &objects.Attribute{}
 				a.Unmarshal(bet)
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
 			} else if IsKmipInt(f) {
@@ -230,14 +222,14 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 
 	}
 }
-
+/*
 func MarshalAllT(a *KmipStructResponse) []byte {
 	//ty := reflect.TypeOf(*a)
 	v := reflect.ValueOf(a)
 
 	return DummyMarshal(&v, "")
 
-}
+}*/
 
 func MarshalAllRequest(a *KmipStruct) []byte {
 	//ty := reflect.TypeOf(*a)

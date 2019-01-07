@@ -75,6 +75,7 @@ type KeyBlock struct {
 	CryptographicAlgorithm *kmipbin.KmipEnum
 	CryptographicLength    *kmipbin.KmipInt
 	KeywrappingData        *KeyWrappingData
+	RawData				   []byte
 }
 
 type KeyValue struct {
@@ -191,22 +192,22 @@ type TransparentECMQVPublicKey struct {
 
 type PrivateKeyTemplateAttribute struct {
 	Name      *Name
-	Attribute *Attribute
+	Attribute []*Attribute
 }
 
 type PublicKeyTemplateAttribute struct {
 	Name      *Name
-	Attribute *Attribute
+	Attribute []*Attribute
 }
 
 type CommonTemplateAttribute struct {
 	Name      *Name
-	Attribute *Attribute
+	Attribute []*Attribute
 }
 
 type TemplateAttribute struct {
 	Name      *Name
-	Attribute *Attribute
+	Attribute []*Attribute
 }
 
 type ExtensionInformation struct {
@@ -258,4 +259,15 @@ type DerivationParameters struct {
 	DerivationData			*kmipbin.KmipByteString
 }
 
+func (k *KeyBlock) Unmarshal(bet *[]byte) {
+	var l kmipbin.KmipLength
+	l.UnMarshalBin((*bet)[4:8])
+	le := kmipbin.PadLength(int(l))
+	////////////////////////////////////////////
 
+	k.RawData = make([]byte, 8+le)
+	copy(k.RawData, (*bet)[:8+le])
+
+	/////////////////////////////////////////////
+	*bet = (*bet)[8+le:]
+}

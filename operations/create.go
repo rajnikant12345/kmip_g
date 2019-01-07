@@ -10,4 +10,5 @@ func Create(req *parser.KmipStruct , res *parser.KmipStructResponse, batchNum in
 	if bi == nil {
 		errors.New("")
 	}
+	return nil
 }

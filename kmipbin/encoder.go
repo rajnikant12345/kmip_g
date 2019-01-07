@@ -18,6 +18,7 @@ type KmipTagType struct {
 	Type uint32
 }
 
+
 type BaseMarshal interface {
 	UnMarshalBin([]byte) error
 	MarshalBin() []byte

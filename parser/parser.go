@@ -4,13 +4,19 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"github.com/rajnikant12345/kmip_g/objects"
 )
+
+type KmipStruct struct {
+	RequestMessage *objects.RequestMessage
+}
 
 func Parser(rw io.ReadWriter) {
 	kmipBin, err := TTLVReader(rw)
 	if err != nil {
 		return
 	}
+
 	r := KmipStruct{}
 	UnmaeshalAllT(&r, kmipBin)
 
@@ -20,7 +26,7 @@ func Parser(rw io.ReadWriter) {
 
 	fmt.Println(string(x))
 
-	v := DataAttributesKmip{}
+	/*v := DataAttributesKmip{}
 
 	if r.GetBatcItem(0).GetRequestPayload().TemplateAttribute != nil {
 		for i:=0;i<len(r.GetBatcItem(0).GetRequestPayload().TemplateAttribute.Attribute);i++ {
@@ -38,7 +44,7 @@ func Parser(rw io.ReadWriter) {
 		}
 
 	}
-
+*/
 
 
 
