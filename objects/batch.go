@@ -15,6 +15,10 @@ type RequestPayload struct {
 	PrivateKey                   *PrivateKey
 	PublicKey                    *PublicKey
 	QueryFunction                []*kmipbin.KmipEnum
+	AttributeName				 []*kmipbin.KmipTextString
+	RevocationReason			 *RevocationReason
+	CompromiseOccurrenceDate	*kmipbin.KmipDate
+	SymmetricKey				*SymmetricKey
 }
 
 type ResponsePayload struct {

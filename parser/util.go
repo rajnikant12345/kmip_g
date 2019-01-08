@@ -284,12 +284,21 @@ func MarshalAllResponse(a *objects.KmipStructResponse) []byte {
 
 func WriteKmipInt(field reflect.Value, tag string, b *bytes.Buffer) {
 	byt := field.MethodByName("MarshalBin").Call(nil)
-	l := fmt.Sprintf("%08x", 4)
+	var l string
+	if field.Type().String() == "*kmipbin.KmipBoolean" ||
+		field.Type().String() == "*kmipbin.KmipDate" ||
+		field.Type().String() == "*kmipbin.KmipLongInt" {
+		l = fmt.Sprintf("%08x", 8)
+	}else {
+		l = fmt.Sprintf("%08x", 4)
+	}
+
 	k, _ := hex.DecodeString(tag + GetTypeString(field) + l)
 	b.Write(k)
 	b.Write(byt[0].Bytes())
 
 }
+
 
 func WriteKmipIntINterface(field kmipbin.BaseMarshal, tag string, b *bytes.Buffer) {
 	byt := field.MarshalBin()
@@ -456,7 +465,24 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 
 			} else {
 				tag := Tags[ty.Field(i).Name]
-				if tag == "420008" {
+
+				if tag == "420045" {
+					fmt.Println("rajni", field.Elem().Type())
+					h := field.Elem()
+					if field.Elem().Type().String() == "*objects.KeyValue" {
+						bt := DummyMarshal(&h, "")
+						l := fmt.Sprintf("%08x", len(bt))
+						k, _ := hex.DecodeString(tag + "01" + l)
+						b.Write(k)
+						b.Write(bt)
+					} else {
+						WriteKmipString(h, tag, &b)
+					}
+				} else if tag == "420043" {
+					fmt.Println("rajni", field.Elem().Type())
+					h := field.Elem()
+					WriteKmipString(h, tag, &b)
+				} else if tag == "420008" {
 					length := field.Len()
 					for i := 0; i < length; i++ {
 						el := field.Index(i).Interface().(*objects.Attribute)
