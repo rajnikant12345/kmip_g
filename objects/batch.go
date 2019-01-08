@@ -12,12 +12,13 @@ type RequestPayload struct {
 	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
 	Template                     *Template
 	SecretData                   *SecretData
-	PrivateKey					 *PrivateKey
-	PublicKey					 *PublicKey
-	QueryFunction				[]*kmipbin.KmipEnum
+	PrivateKey                   *PrivateKey
+	PublicKey                    *PublicKey
+	QueryFunction                []*kmipbin.KmipEnum
 }
 
 type ResponsePayload struct {
+	ObjectType       *kmipbin.KmipEnum
 	UniqueIdentifier *kmipbin.KmipTextString
 	Attribute        []*Attribute
 }
@@ -30,7 +31,6 @@ type MessageExtension struct {
 
 type VendorExtension struct {
 }
-
 
 type BatchItem struct {
 	Operation                    *kmipbin.KmipEnum

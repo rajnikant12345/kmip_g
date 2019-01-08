@@ -3,8 +3,6 @@ package objects
 import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"strings"
-	//"fmt"
-	//"reflect"
 )
 
 type Attribute struct {
@@ -255,6 +253,6 @@ func (a *Attribute) CreateAttribute() {
 		a.AttributeValue = new(KeyValueLocation)
 	}
 	if *a.AttributeName == "Original Creation Date" {
-		a.AttributeValue = new(KeyValueLocation)
+		a.AttributeValue = new(kmipbin.KmipDate)
 	}
 }
