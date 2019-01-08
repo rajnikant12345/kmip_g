@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"bytes"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"strings"
 	"fmt"
@@ -118,11 +119,17 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 }
 
 func (a *Attribute) Marshal(f func(interface{}) []byte ) []byte {
-	fmt.Println("============================")
+	out := bytes.Buffer{}
+	//fmt.Println("============================")
 	b := f(a)
-	fmt.Println(hex.EncodeToString(b))
-	fmt.Println("============================")
-	return b
+
+	//fmt.Println("============================")
+
+	bb,_ := hex.DecodeString("42000801"+fmt.Sprintf("%08x",(len(b))))
+	out.Write(bb)
+	out.Write(b)
+	//fmt.Println(hex.EncodeToString(out.Bytes()))
+	return out.Bytes()
 }
 
 func (a *Attribute) CreateAttribute() {
@@ -143,7 +150,7 @@ func (a *Attribute) CreateAttribute() {
 		a.AttributeValue = new(kmipbin.KmipEnum)
 	}
 	if *a.AttributeName == "Cryptographic Length" {
-		a.AttributeValue = new(kmipbin.KmipEnum)
+		a.AttributeValue = new(kmipbin.KmipInt)
 	}
 	if *a.AttributeName == "Cryptographic Parameters" {
 		a.AttributeValue = new(CryptographicParameters)

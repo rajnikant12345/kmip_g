@@ -324,7 +324,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 
 	for i := 0; i < v.Elem().NumField(); i++ {
 		field := v.Elem().Field(i)
-		fmt.Println("Rajni....",ty.Field(i).Name)
+		//fmt.Println("Rajni....",ty.Field(i).Name)
 		//fmt.Println(field.Kind())
 
 		if ty.Field(i).Name == "data" || ty.Field(i).Name == "function" {
@@ -372,7 +372,19 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 						continue
 					}
 					WriteKmipString(field.Elem(), tag, &b)
+				} else {
+					var tag string
+					tag = Tags[ty.Field(i).Name]
 
+					if tag == "" {
+						continue
+					}
+					dd := field.Elem()
+					bt := DummyMarshalDup(&dd)
+					l := fmt.Sprintf("%08x", len(bt))
+					k, _ := hex.DecodeString(tag + "01" + l)
+					b.Write(k)
+					b.Write(bt)
 				}
 			}else {
 				tag := Tags[ty.Field(i).Name]
