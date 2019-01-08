@@ -8,8 +8,9 @@ type RequestPayload struct {
 	TemplateAttribute            *TemplateAttribute
 	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
-	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
+	CommonTemplateAttribute		 *CommonTemplateAttribute
 	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
+	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
 	Template                     *Template
 	SecretData                   *SecretData
 	PrivateKey                   *PrivateKey
