@@ -3,15 +3,19 @@ package objects
 import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"strings"
+	"fmt"
+	"encoding/hex"
 )
 
 type Attribute struct {
 	AttributeName  *kmipbin.KmipTextString
 	AttributeIndex *kmipbin.KmipInt
 	AttributeValue interface{}
-	data           []byte
-	function       func(interface{} , []byte)
+	data           []byte	`ignore:"true"`
+	function       func(interface{} , []byte)	`ignore:"true"`
 }
+
+
 
 func MakeType(val uint32) interface{} {
 
@@ -113,12 +117,12 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	a.Unpack(a.data)
 }
 
-func (a *Attribute) Marshal() []byte {
-	size := len(a.data)
-	tmp := make([]byte, size)
-	// remove extra copy id not needed
-	copy(tmp, a.data)
-	return tmp
+func (a *Attribute) Marshal(f func(interface{}) []byte ) []byte {
+	fmt.Println("============================")
+	b := f(a)
+	fmt.Println(hex.EncodeToString(b))
+	fmt.Println("============================")
+	return b
 }
 
 func (a *Attribute) CreateAttribute() {

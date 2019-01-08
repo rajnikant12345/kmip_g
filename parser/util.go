@@ -309,6 +309,106 @@ func WriteKmipString(field reflect.Value, tag string, b *bytes.Buffer) {
 	b.Write(byt[0].Bytes())
 }
 
+func MarshalInside(a interface{}) []byte {
+	//ty := reflect.TypeOf(*a)
+	v := reflect.ValueOf(a)
+
+	return DummyMarshalDup(&v)
+
+}
+
+func DummyMarshalDup(v *reflect.Value) []byte {
+	b := bytes.Buffer{}
+	ty := reflect.TypeOf(v.Elem().Interface())
+
+
+	for i := 0; i < v.Elem().NumField(); i++ {
+		field := v.Elem().Field(i)
+		fmt.Println("Rajni....",ty.Field(i).Name)
+		//fmt.Println(field.Kind())
+
+		if ty.Field(i).Name == "data" || ty.Field(i).Name == "function" {
+			continue
+		}
+
+
+		if !field.IsNil() {
+
+			if IsKmipInt(field) {
+				var tag string
+
+				tag = Tags[ty.Field(i).Name]
+
+				if tag == "" {
+					continue
+				}
+				WriteKmipInt(field, tag, &b)
+
+			} else if IsKMIPString(field) {
+				var tag string
+				tag = Tags[ty.Field(i).Name]
+
+				if tag == "" {
+					continue
+				}
+				WriteKmipString(field, tag, &b)
+
+			} else if field.Kind() == reflect.Interface {
+				if IsKmipInt(field.Elem()) {
+					var tag string
+
+					tag = Tags[ty.Field(i).Name]
+
+					if tag == "" {
+						continue
+					}
+					WriteKmipInt(field.Elem(), tag, &b)
+
+				} else if IsKMIPString(field.Elem()) {
+					var tag string
+					tag = Tags[ty.Field(i).Name]
+
+					if tag == "" {
+						continue
+					}
+					WriteKmipString(field.Elem(), tag, &b)
+
+				}
+			}else {
+				tag := Tags[ty.Field(i).Name]
+
+				var bt []byte
+				if field.Kind() == reflect.Slice {
+					length := field.Len()
+					for i := 0; i < length; i++ {
+						el := field.Index(i)
+						if IsKMIPString(el) {
+							WriteKmipString(el, tag, &b)
+						} else if IsKmipInt(el) {
+							WriteKmipInt(el, tag, &b)
+						} else {
+							bty := DummyMarshalDup(&el)
+							l := fmt.Sprintf("%08x", len(bty))
+							k, _ := hex.DecodeString(tag + "01" + l)
+							bt = append(bt, k...)
+							bt = append(bt, bty...)
+						}
+					}
+					b.Write(bt)
+				} else {
+					bt = DummyMarshalDup(&field)
+					l := fmt.Sprintf("%08x", len(bt))
+					k, _ := hex.DecodeString(tag + "01" + l)
+					b.Write(k)
+					b.Write(bt)
+				}
+
+			}
+		}
+	}
+	return b.Bytes()
+}
+
 func DummyMarshal(v *reflect.Value, tagin string) []byte {
 	b := bytes.Buffer{}
 	ty := reflect.TypeOf(v.Elem().Interface())
@@ -342,49 +442,40 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				}
 				WriteKmipString(field, tag, &b)
 
-			} else if field.Kind() == reflect.Interface {
-				if IsKmipInt(field.Elem()) {
-					fmt.Println("Yes KMIP int")
-					var tag string
-					if tagin != "" {
-						tag = tagin
-					} else {
-						tag = Tags[ty.Field(i).Name]
-					}
-					if tag == "" {
-						continue
-					}
-					WriteKmipInt(field.Elem(), tag, &b)
-					fmt.Println("Success")
-				}
-			}else {
+			} else {
 				tag := Tags[ty.Field(i).Name]
-				var bt []byte
-				if field.Kind() == reflect.Slice {
+				if tag == "420008" {
 					length := field.Len()
 					for i := 0; i < length; i++ {
-						el := field.Index(i)
-						if IsKMIPString(el) {
-							WriteKmipString(el, tag, &b)
-						} else if IsKmipInt(el) {
-							WriteKmipInt(el, tag, &b)
-						} else {
-							fmt.Println("Rajni",tag)
-							bty := DummyMarshal(&el, "")
-							fmt.Println("rajni",tag,bty)
-							l := fmt.Sprintf("%08x", len(bty))
-							k, _ := hex.DecodeString(tag + "01" + l)
-							bt = append(bt, k...)
-							bt = append(bt, bty...)
-						}
+						el := field.Index(i).Interface().(*objects.Attribute)
+						b.Write(el.Marshal(MarshalInside))
 					}
-					b.Write(bt)
 				} else {
-					bt = DummyMarshal(&field, "")
-					l := fmt.Sprintf("%08x", len(bt))
-					k, _ := hex.DecodeString(tag + "01" + l)
-					b.Write(k)
-					b.Write(bt)
+					var bt []byte
+					if field.Kind() == reflect.Slice {
+						length := field.Len()
+						for i := 0; i < length; i++ {
+							el := field.Index(i)
+							if IsKMIPString(el) {
+								WriteKmipString(el, tag, &b)
+							} else if IsKmipInt(el) {
+								WriteKmipInt(el, tag, &b)
+							} else {
+								bty := DummyMarshal(&el, "")
+								l := fmt.Sprintf("%08x", len(bty))
+								k, _ := hex.DecodeString(tag + "01" + l)
+								bt = append(bt, k...)
+								bt = append(bt, bty...)
+							}
+						}
+						b.Write(bt)
+					} else {
+						bt = DummyMarshal(&field, "")
+						l := fmt.Sprintf("%08x", len(bt))
+						k, _ := hex.DecodeString(tag + "01" + l)
+						b.Write(k)
+						b.Write(bt)
+					}
 				}
 			}
 		}
