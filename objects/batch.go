@@ -4,11 +4,15 @@ import "github.com/rajnikant12345/kmip_g/kmipbin"
 
 type RequestPayload struct {
 	ObjectType                   *kmipbin.KmipEnum
-	UniqueIdentifier             *kmipbin.KmipTextString
+	UniqueIdentifier             []*kmipbin.KmipTextString
 	CertificateRequestType		*kmipbin.KmipEnum
 	CertificateRequest			*kmipbin.KmipByteString
 	KeyWrappingSpecification	*KeyWrappingSpecification
+	SplitKeyParts				*kmipbin.KmipInt
+	SplitKeyThreshold			*kmipbin.KmipInt
+	SplitKeyMethod				*kmipbin.KmipEnum
 	TemplateAttribute            *TemplateAttribute
+	SplitKey					*SplitKey
 	PutFunction					*kmipbin.KmipEnum
 	SymmetricKey				*SymmetricKey
 	Attribute                    []*Attribute
@@ -18,6 +22,7 @@ type RequestPayload struct {
 	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
 	Template                     *Template
 	SecretData                   *SecretData
+	PGPKey						*PGPKey
 	PrivateKey                   *PrivateKey
 	PublicKey                    *PublicKey
 	QueryFunction                []*kmipbin.KmipEnum
@@ -31,9 +36,35 @@ type RequestPayload struct {
 }
 
 type ResponsePayload struct {
-	ObjectType       *kmipbin.KmipEnum
-	UniqueIdentifier *kmipbin.KmipTextString
-	Attribute        []*Attribute
+	ObjectType                   *kmipbin.KmipEnum
+	UniqueIdentifier             []*kmipbin.KmipTextString
+	CertificateRequestType		*kmipbin.KmipEnum
+	CertificateRequest			*kmipbin.KmipByteString
+	KeyWrappingSpecification	*KeyWrappingSpecification
+	SplitKeyParts				*kmipbin.KmipInt
+	SplitKeyThreshold			*kmipbin.KmipInt
+	SplitKeyMethod				*kmipbin.KmipEnum
+	TemplateAttribute            *TemplateAttribute
+	SplitKey					*SplitKey
+	PutFunction					*kmipbin.KmipEnum
+	SymmetricKey				*SymmetricKey
+	Attribute                    []*Attribute
+	AsynchronousCorrelationValue *kmipbin.KmipByteString
+	CommonTemplateAttribute		 *CommonTemplateAttribute
+	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
+	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
+	Template                     *Template
+	SecretData                   *SecretData
+	PGPKey						*PGPKey
+	PrivateKey                   *PrivateKey
+	PublicKey                    *PublicKey
+	QueryFunction                []*kmipbin.KmipEnum
+	AttributeName				 []*kmipbin.KmipTextString
+	RevocationReason			 *RevocationReason
+	CompromiseOccurrenceDate	*kmipbin.KmipDate
+	Certificate					*Certificate
+	KeyFormatType				*kmipbin.KmipEnum
+	ProtocolVersion				*ProtocolVersion
 }
 
 type MessageExtension struct {

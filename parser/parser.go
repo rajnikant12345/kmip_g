@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"encoding/xml"
-	"fmt"
 	"io"
 	"github.com/rajnikant12345/kmip_g/objects"
 )
@@ -25,10 +23,10 @@ func Parser(rw io.ReadWriter) *KmipStruct {
 	return &r
 }
 
-func ResPonseParser(rw io.ReadWriter) {
+func ResPonseParser(rw io.ReadWriter) *objects.KmipStructResponse {
 	kmipBin, err := TTLVReader(rw)
 	if err != nil {
-		return
+		return nil
 	}
 
 	r := objects.KmipStructResponse{}
@@ -36,9 +34,11 @@ func ResPonseParser(rw io.ReadWriter) {
 
 	//r.Unmarshal(kmipBin[8:])
 
-	x, _ := xml.MarshalIndent(r, "", "  ")
+	//x, _ := xml.MarshalIndent(r, "", "  ")
 
-	fmt.Println(string(x))
+	//fmt.Println(string(x))
+
+	return &r
 }
 
 
