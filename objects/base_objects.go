@@ -50,9 +50,9 @@ type CryptographicDomainParameters struct {
 }
 
 type CredentialValue struct {
+	DeviceSerialNumber     *kmipbin.KmipTextString
 	Username               *kmipbin.KmipTextString
 	Password               *kmipbin.KmipTextString
-	DeviceSerialNumber     *kmipbin.KmipTextString
 	DeviceIdentifier       *kmipbin.KmipTextString
 	NetworkIdentifier      *kmipbin.KmipTextString
 	MachineIdentifier      *kmipbin.KmipTextString
@@ -70,28 +70,25 @@ type Credential struct {
 
 type KeyBlock struct {
 	KeyFormatType          *kmipbin.KmipEnum
-	KeyCompressionType    *kmipbin.KmipEnum
+	KeyCompressionType     *kmipbin.KmipEnum
 	KeyValue               interface{}
 	CryptographicAlgorithm *kmipbin.KmipEnum
 	CryptographicLength    *kmipbin.KmipInt
 	KeywrappingData        *KeyWrappingData
 }
 
-
-func (k *KeyBlock) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
+func (k *KeyBlock) Unmarshal(bet *[]byte, f func(interface{}, []byte)) {
 	var l kmipbin.KmipLength
 	l.UnMarshalBin((*bet)[4:8])
 	le := kmipbin.PadLength(int(l))
 	////////////////////////////////////////////
 
-//	k.RawData = make([]byte, 8+le)
-//	copy(k.RawData, (*bet)[:8+le])
+	//	k.RawData = make([]byte, 8+le)
+	//	copy(k.RawData, (*bet)[:8+le])
 
 	/////////////////////////////////////////////
 	*bet = (*bet)[8+le:]
 }
-
-
 
 type KeyValue struct {
 	KeyMaterial interface{}
@@ -155,11 +152,16 @@ type TransparentDSAPublicKey struct {
 	P, Q, G, Y *kmipbin.KmipBigInt
 }
 
-type TransparentRSAPrivateKey struct {
+type TransparentKey struct {
 	Modulus, PrivateExponent       *kmipbin.KmipBigInt
-	PublicExponent, p, Q           *kmipbin.KmipBigInt
+	PublicExponent, P, Q           *kmipbin.KmipBigInt
 	PrimeExponentP, PrimeExponentQ *kmipbin.KmipBigInt
 	CRTCoefficient                 *kmipbin.KmipBigInt
+	X                              *kmipbin.KmipBigInt
+	G, J, Y                        *kmipbin.KmipBigInt
+	RecommendedCurve               *kmipbin.KmipEnum
+	D                              *kmipbin.KmipBigInt
+	QString                        *kmipbin.KmipByteString
 }
 
 type TransparentRSAPublicKey struct {
@@ -238,9 +240,9 @@ type Digest struct {
 }
 
 type UsageLimits struct {
-	UsageLimitsTotal	*kmipbin.KmipLongInt
-	UsageLimitsCount	*kmipbin.KmipLongInt
-	UsageLimitsUnit		*kmipbin.KmipEnum
+	UsageLimitsTotal *kmipbin.KmipLongInt
+	UsageLimitsCount *kmipbin.KmipLongInt
+	UsageLimitsUnit  *kmipbin.KmipEnum
 }
 
 type RevocationReason struct {
@@ -264,12 +266,12 @@ type AlternativeName struct {
 }
 
 type KeyValueLocation struct {
-	KeyValueLocationValue	*kmipbin.KmipTextString
-	KeyValueLocationType	*kmipbin.KmipEnum
+	KeyValueLocationValue *kmipbin.KmipTextString
+	KeyValueLocationType  *kmipbin.KmipEnum
 }
 
 type DerivationParameters struct {
 	CryptographicParameters *CryptographicParameters
-	InitializationVector	*kmipbin.KmipByteString
-	DerivationData			*kmipbin.KmipByteString
+	InitializationVector    *kmipbin.KmipByteString
+	DerivationData          *kmipbin.KmipByteString
 }

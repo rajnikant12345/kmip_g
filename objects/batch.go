@@ -5,6 +5,9 @@ import "github.com/rajnikant12345/kmip_g/kmipbin"
 type RequestPayload struct {
 	ObjectType                   *kmipbin.KmipEnum
 	UniqueIdentifier             *kmipbin.KmipTextString
+	CertificateRequestType		*kmipbin.KmipEnum
+	CertificateRequest			*kmipbin.KmipByteString
+	KeyWrappingSpecification	*KeyWrappingSpecification
 	TemplateAttribute            *TemplateAttribute
 	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
@@ -20,6 +23,9 @@ type RequestPayload struct {
 	RevocationReason			 *RevocationReason
 	CompromiseOccurrenceDate	*kmipbin.KmipDate
 	SymmetricKey				*SymmetricKey
+	Certificate					*Certificate
+	KeyFormatType				*kmipbin.KmipEnum
+	ProtocolVersion				*ProtocolVersion
 }
 
 type ResponsePayload struct {

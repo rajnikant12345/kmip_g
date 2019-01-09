@@ -6,6 +6,7 @@ import (
 	"strings"
 	"fmt"
 	"encoding/hex"
+	"github.com/rajnikant12345/kmip_g/kmiptags"
 )
 
 type Attribute struct {
@@ -62,6 +63,15 @@ func (a *Attribute) Unpack(b []byte) {
 	b = b[le:]
 
 	/////
+
+	if hex.EncodeToString(b[:3]) == kmiptags.Tags["AttributeIndex"] {
+		b = b[8:]
+		var index kmipbin.KmipInt
+		index.UnMarshalBin(b[:8])
+		a.AttributeIndex = &index
+		b = b[8:]
+	}
+	///
 
 	tty.UnMarshalBin(b[:4])
 	l.UnMarshalBin(b[4:8])

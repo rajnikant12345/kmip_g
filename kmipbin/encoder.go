@@ -3,7 +3,6 @@ package kmipbin
 import (
 	"encoding/binary"
 	"errors"
-	"math/big"
 )
 
 func PadLength(in int) int {
@@ -195,13 +194,14 @@ func (k *KmipByteString) UnMarshalBin(b []byte, length int) error {
 	return nil
 }
 
-type KmipBigInt big.Int
+type KmipBigInt []byte
+
 
 func (k *KmipBigInt) MarshalBin() []byte {
-	i := big.Int(*k)
-	b := i.Bytes()
-	pad := make([]byte, len(b)%8)
-	b = append(pad, b...)
+	i := *k
+	l := PadLength(len(i))
+	b := make([]byte, l)
+	copy(b, []byte(*k))
 	return b
 }
 
@@ -209,10 +209,7 @@ func (k *KmipBigInt) UnMarshalBin(b []byte, length int) error {
 	if len(b)%8 != 0 {
 		return errors.New("Invalid Kmip byte string, must be multiple of 8")
 	}
-	i := new(big.Int)
-	i.SetBytes(b[:length])
-	*k = KmipBigInt(*i)
-
+	*k = KmipBigInt(b[:length])
 	return nil
 }
 

@@ -28,6 +28,8 @@ func GetTypeString(value reflect.Value) string {
 		return "07"
 	case "*kmipbin.KmipByteString":
 		return "08"
+	case "*kmipbin.KmipBigInt":
+		return "04"
 	default:
 		return "-1"
 	}
@@ -77,7 +79,10 @@ func IsKMIPString(value reflect.Value) bool {
 		return true
 	case "*kmipbin.KmipByteString":
 		return true
+	case "*kmipbin.KmipBigInt":
+		return true
 	}
+
 
 	return false
 }
@@ -87,6 +92,8 @@ func GetKMIPString(value reflect.Value) interface{} {
 	case "*kmipbin.KmipTextString":
 		return new(kmipbin.KmipTextString)
 	case "*kmipbin.KmipByteString":
+		return new(kmipbin.KmipByteString)
+	case "*kmipbin.KmipBigInt":
 		return new(kmipbin.KmipByteString)
 	}
 
@@ -209,7 +216,8 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 					f.Set(k)
 					continue
 				} else {
-					//f = reflect.ValueOf(new(objects.KeyValue))
+					p := new(objects.TransparentKey)
+					f.Set(reflect.ValueOf(&p).Elem())
 				}
 			}
 
@@ -467,7 +475,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				tag := Tags[ty.Field(i).Name]
 
 				if tag == "420045" {
-					fmt.Println("rajni", field.Elem().Type())
+					//fmt.Println("rajni", field.Elem().Type())
 					h := field.Elem()
 					if field.Elem().Type().String() == "*objects.KeyValue" {
 						bt := DummyMarshal(&h, "")
@@ -479,9 +487,17 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 						WriteKmipString(h, tag, &b)
 					}
 				} else if tag == "420043" {
-					fmt.Println("rajni", field.Elem().Type())
+					//fmt.Println("rajni", field.Elem().Type())
 					h := field.Elem()
-					WriteKmipString(h, tag, &b)
+					if field.Elem().Type().String() == "*objects.TransparentKey" {
+						bt := DummyMarshal(&h, "")
+						l := fmt.Sprintf("%08x", len(bt))
+						k, _ := hex.DecodeString(tag + "01" + l)
+						b.Write(k)
+						b.Write(bt)
+					} else {
+						WriteKmipString(h, tag, &b)
+					}
 				} else if tag == "420008" {
 					length := field.Len()
 					for i := 0; i < length; i++ {
