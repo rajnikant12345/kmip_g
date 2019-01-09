@@ -1,6 +1,8 @@
 package objects
 
-import "github.com/rajnikant12345/kmip_g/kmipbin"
+import (
+	"github.com/rajnikant12345/kmip_g/kmipbin"
+)
 
 type RequestPayload struct {
 	ObjectType                   *kmipbin.KmipEnum
@@ -35,9 +37,16 @@ type RequestPayload struct {
 	ProtocolVersion				*ProtocolVersion
 }
 
+type ServerInformation struct {
+
+}
+
 type ResponsePayload struct {
-	ObjectType                   *kmipbin.KmipEnum
+	ObjectType                   []*kmipbin.KmipEnum
 	UniqueIdentifier             []*kmipbin.KmipTextString
+	PrivateKeyUniqueIdentifier	 []*kmipbin.KmipTextString
+	PublicKeyUniqueIdentifier	[]*kmipbin.KmipTextString
+	Operation					[]*kmipbin.KmipEnum
 	CertificateRequestType		*kmipbin.KmipEnum
 	CertificateRequest			*kmipbin.KmipByteString
 	KeyWrappingSpecification	*KeyWrappingSpecification
@@ -65,6 +74,8 @@ type ResponsePayload struct {
 	Certificate					*Certificate
 	KeyFormatType				*kmipbin.KmipEnum
 	ProtocolVersion				*ProtocolVersion
+	VendorIdentification		*kmipbin.KmipTextString
+	ServerInformation			*ServerInformation
 }
 
 type MessageExtension struct {
