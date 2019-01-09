@@ -205,7 +205,7 @@ func (a *Attribute) CreateAttribute() {
 		a.AttributeValue = new(kmipbin.KmipInt)
 	}
 	if *a.AttributeName == "Lease Time" {
-		a.AttributeValue = new(kmipbin.KmipDate)
+		a.AttributeValue = new(kmipbin.KmipInterval)
 	}
 	if *a.AttributeName == "Usage Limits" {
 		a.AttributeValue = new(UsageLimits)

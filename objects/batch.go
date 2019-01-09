@@ -9,6 +9,8 @@ type RequestPayload struct {
 	CertificateRequest			*kmipbin.KmipByteString
 	KeyWrappingSpecification	*KeyWrappingSpecification
 	TemplateAttribute            *TemplateAttribute
+	PutFunction					*kmipbin.KmipEnum
+	SymmetricKey				*SymmetricKey
 	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
 	CommonTemplateAttribute		 *CommonTemplateAttribute
@@ -22,7 +24,7 @@ type RequestPayload struct {
 	AttributeName				 []*kmipbin.KmipTextString
 	RevocationReason			 *RevocationReason
 	CompromiseOccurrenceDate	*kmipbin.KmipDate
-	SymmetricKey				*SymmetricKey
+
 	Certificate					*Certificate
 	KeyFormatType				*kmipbin.KmipEnum
 	ProtocolVersion				*ProtocolVersion
