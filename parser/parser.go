@@ -11,12 +11,8 @@ func Parser(rw io.ReadWriter) *objects.KmipStruct {
 	if err != nil {
 		return nil
 	}
-
 	r := objects.KmipStruct{}
 	UnmaeshalAllRequest(&r, kmipBin)
-	//r.Unmarshal(kmipBin[8:])
-	//xml.MarshalIndent(r, "", "  ")
-	//fmt.Println(string(x))
 	return &r
 }
 
@@ -25,16 +21,8 @@ func ResPonseParser(rw io.ReadWriter) *objects.KmipStructResponse {
 	if err != nil {
 		return nil
 	}
-
 	r := objects.KmipStructResponse{}
 	UnmaeshalAllResponse(&r, kmipBin)
-
-	//r.Unmarshal(kmipBin[8:])
-
-	//x, _ := xml.MarshalIndent(r, "", "  ")
-
-	//fmt.Println(string(x))
-
 	return &r
 }
 

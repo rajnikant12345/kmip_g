@@ -1,0 +1,20 @@
+package derivation
+
+//Derivation Method Enumeration
+
+const (
+	PBKDF2 = 0x00000001
+
+	HASH = 0x00000002
+
+	HMAC = 0x00000003
+
+	ENCRYPT = 0x00000004
+
+	NIST800108C = 0x00000005
+
+	NIST800108F = 0x00000006
+
+	NIST800108DPI = 0x00000007
+)
+

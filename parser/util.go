@@ -4,11 +4,61 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/objects"
 	"reflect"
 	"strings"
 )
+
+var kerror = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+//var kerrorDuplicate = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+
+func validateType(value reflect.Value, typ string) {
+
+	switch value.Type().String() {
+	case "*kmipbin.KmipInt":
+		if typ != "02" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipBoolean":
+		if typ != "06" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipEnum":
+		if typ != "05" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipDate":
+		if typ != "09" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipLongInt":
+		if typ != "03" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipInterval":
+		if typ != "0A" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipTextString":
+		if typ != "07" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipByteString":
+		if typ != "08" {
+			panic(kerror)
+		}
+	case "*kmipbin.KmipBigInt":
+		if typ != "04" {
+			panic(kerror)
+		}
+	default:
+		panic(kerror)
+
+	}
+}
 
 func GetTypeString(value reflect.Value) string {
 	switch value.Type().String() {
@@ -83,7 +133,6 @@ func IsKMIPString(value reflect.Value) bool {
 		return true
 	}
 
-
 	return false
 }
 
@@ -129,6 +178,7 @@ func UnmaeshalAllResponse(a *objects.KmipStructResponse, b []byte) {
 }
 
 func ReadKmipInt(f *reflect.Value, bet *[]byte) {
+
 	*bet = (*bet)[8:]
 	typ := reflect.TypeOf(f.Interface()).Elem()
 	k := reflect.New(typ)
@@ -138,6 +188,7 @@ func ReadKmipInt(f *reflect.Value, bet *[]byte) {
 }
 
 func ReadKmipString(f *reflect.Value, bet *[]byte) {
+
 	var l kmipbin.KmipLength
 	l.UnMarshalBin((*bet)[4:8])
 	*bet = (*bet)[8:]
@@ -192,7 +243,12 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 		if !ok {
 			return
 		} else {
-			// handle attribute separate as it comes with many flavours
+
+			if !f.IsNil() && reflect.TypeOf(f.Interface()).Kind() != reflect.Slice {
+				fmt.Println(f.String())
+				panic(kerror)
+			}
+			// key value
 			if tag == "420045" {
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
 					p := new(kmipbin.KmipByteString)
@@ -207,6 +263,7 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 				}
 			}
 
+			// key material
 			if tag == "420043" {
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
 					p := new(kmipbin.KmipByteString)
@@ -221,13 +278,16 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 				}
 			}
 
+			// attribute array needs special parsing
 			if tag == "420008" {
 				a := &objects.Attribute{}
 				a.Unmarshal(bet, AttrMarshal)
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
 			} else if IsKmipInt(f) {
+				validateType( f, hex.EncodeToString((*bet)[3:4]) )
 				ReadKmipInt(&f, bet)
 			} else if IsKMIPString(f) {
+				validateType( f, hex.EncodeToString((*bet)[3:4]) )
 				ReadKmipString(&f, bet)
 			} else {
 
@@ -244,20 +304,34 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 						if IsKmipInt(k) {
 							p := GetKmipInt(k)
 							h := reflect.ValueOf(&p).Elem()
+							validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
 							ReadKmipInt(&h, bet)
 							k = reflect.ValueOf(h.Interface())
 						} else if IsKMIPString(k) {
 							//fmt.Println(k.Type(), k.Elem().Type())
 							p := GetKMIPString(k)
 							h := reflect.ValueOf(&p).Elem()
+							validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
 							ReadKmipString(&h, bet)
+
 							k = reflect.ValueOf(h.Interface())
 						}
 					} else {
+
+						typstr := hex.EncodeToString((*bet)[3:4])
+						if typstr != "01" {
+							panic(kerror)
+						}
+
 						(*bet) = (*bet)[8:]
 						Dummy(&k, bet)
 					}
 				} else {
+
+					typstr := hex.EncodeToString((*bet)[3:4])
+					if typstr != "01" {
+						panic(kerror)
+					}
 					(*bet) = (*bet)[8:]
 					k = reflect.New(typ)
 					Dummy(&k, bet)
@@ -297,7 +371,7 @@ func WriteKmipInt(field reflect.Value, tag string, b *bytes.Buffer) {
 		field.Type().String() == "*kmipbin.KmipDate" ||
 		field.Type().String() == "*kmipbin.KmipLongInt" {
 		l = fmt.Sprintf("%08x", 8)
-	}else {
+	} else {
 		l = fmt.Sprintf("%08x", 4)
 	}
 
@@ -306,7 +380,6 @@ func WriteKmipInt(field reflect.Value, tag string, b *bytes.Buffer) {
 	b.Write(byt[0].Bytes())
 
 }
-
 
 func WriteKmipIntINterface(field kmipbin.BaseMarshal, tag string, b *bytes.Buffer) {
 	byt := field.MarshalBin()
@@ -338,7 +411,6 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 	b := bytes.Buffer{}
 	ty := reflect.TypeOf(v.Elem().Interface())
 
-
 	for i := 0; i < v.Elem().NumField(); i++ {
 		field := v.Elem().Field(i)
 		//fmt.Println("Rajni....",ty.Field(i).Name)
@@ -347,7 +419,6 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 		if ty.Field(i).Name == "data" || ty.Field(i).Name == "function" {
 			continue
 		}
-
 
 		if !field.IsNil() {
 
@@ -403,7 +474,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 					b.Write(k)
 					b.Write(bt)
 				}
-			}else {
+			} else {
 				tag := Tags[ty.Field(i).Name]
 
 				var bt []byte

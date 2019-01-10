@@ -1,45 +1,4 @@
-package model
-
-//resultstatus
-const (
-	Success          = 0
-	OperationFailed  = 1
-	OperationPending = 2
-	OperationUndone  = 3
-)
-
-//ResultReasonEnumeration
-const (
-	ItemNotFound                     = 1
-	ResponseTooLarge                 = 2
-	AuthenticationNotSuccessful      = 3
-	InvalidMessage                   = 4
-	OperationNotSupported            = 5
-	MissingData                      = 6
-	InvalidField                     = 7
-	FeatureNotSupported              = 8
-	OperationCanceledByRequester     = 9
-	CryptographicFailure             = 10
-	IllegalOperation                 = 11
-	PermissionDenied                 = 12
-	ObjectArchived                   = 13
-	IndexOutofBounds                 = 14
-	ApplicationNamespaceNotSupported = 15
-	KeyFormatTypeNotSupported        = 16
-	KeyCompressionTypeNotSupported   = 17
-	EncodingOptionError              = 18
-	KeyValueNotPresent               = 19
-	AttestationRequired              = 20
-	AttestationFailed                = 21
-	GeneralFailure                   = 0x100
-)
-
-//CredentialType
-const (
-	UsernameAndPassword = 0x00000001
-	Device              = 0x00000002
-	Attestation         = 0x00000003
-)
+package keyenums
 
 //Compressiontype
 
@@ -248,8 +207,8 @@ const (
 
 // Certificate Type
 const (
-	X509CetificateType = 0x00000001
-	CertificatePGP                = 0x00000002
+	X509 = 0x00000001
+	PGP  = 0x00000002
 )
 
 // Digital Signature Algorithm
@@ -307,9 +266,8 @@ const (
 
 // Name Type
 const (
-	NameUninterpretedTextString = 0x00000001
-
-	NameURI = 00000002
+	UninterpretedTextString = 0x00000001
+	URI                     = 00000002
 )
 
 // object type
@@ -387,6 +345,8 @@ const (
 
 	EC = 0x0000001A
 )
+
+
 
 // Block Cipher Mode Enumeration
 const (
@@ -478,6 +438,7 @@ const (
 	SHA512256 = 0x0000000D
 )
 
+
 /////////Key Role Type///////////
 
 const (
@@ -524,41 +485,9 @@ const (
 	PVKOTH = 0x00000015
 )
 
-////////////////////////////////////////
+////Link Type Enumeration
 
 const (
-	/////////////
-
-	PreActive = 0x00000001
-
-	Active = 0x00000002
-
-	Deactivated = 0x00000003
-
-	Compromised = 0x00000004
-
-	Destroyed = 0x00000005
-
-	DestroyedCompromised = 0x00000006
-
-	////////////////////
-
-	Unspecified = 0x00000001
-
-	KeyCompromise = 0x00000002
-
-	CACompromise = 0x00000003
-
-	AffiliationChanged = 0x00000004
-
-	Superseded = 0x00000005
-
-	CessationofOperation = 0x00000006
-
-	PrivilegeWithdrawn = 0x00000007
-
-	////////////////
-
 	CertificateLink = 0x00000101
 
 	PublicKeyLink = 0x00000102
@@ -580,24 +509,11 @@ const (
 	PreviousLink = 0x0000010A
 
 	NextLink = 0x0000010B
+)
 
-	//////////////////
 
-	PBKDF2 = 0x00000001
-
-	HASH = 0x00000002
-
-	HMAC = 0x00000003
-
-	ENCRYPT = 0x00000004
-
-	NIST800108C = 0x00000005
-
-	NIST800108F = 0x00000006
-
-	NIST800108DPI = 0x00000007
-
-	/////////////////////
+// Certificate Request Type
+const (
 
 	CRMF = 0x00000001
 
@@ -607,233 +523,4 @@ const (
 
 	PGP = 0x00000004
 
-	/////////////////////
-
-	Valid = 0x00000001
-
-	Invalid = 0x00000002
-
-	Unknown = 0x00000003
-
-	/////////////////
-
-	QueryOperations = 0x00000001
-
-	QueryObjects = 0x00000002
-
-	QueryServerInformation = 0x00000003
-
-	QueryApplicationNamespaces = 0x00000004
-
-	QueryExtensionList = 0x00000005
-
-	QueryExtensionMap = 0x00000006
-
-	QueryAttestationTypes = 0x00000007
-
-	/////////////////////
-
-	Canceled = 0x00000001
-
-	UnabletoCancel = 0x00000002
-
-	Completed = 0x00000003
-
-	Failed = 0x00000004
-
-	Unavailable = 0x00000005
-
-	//////////////////
-
-	New = 0x00000001
-
-	Replace = 0x00000002
-
-	///////////////////////
-
-	Create = 0x00000001
-
-	CreateKeyPair = 0x00000002
-
-	Register = 0x00000003
-
-	Rekey = 0x00000004
-
-	OperationDeriveKey = 0x00000005
-
-	Certify = 0x00000006
-
-	Recertify = 0x00000007
-
-	Locate = 0x00000008
-
-	Check = 0x00000009
-
-	Get = 0x0000000A
-
-	GetAttributes = 0x0000000B
-
-	GetAttributeList = 0x0000000C
-
-	AddAttribute = 0x0000000D
-
-	ModifyAttribute = 0x0000000E
-
-	DeleteAttribute = 0x0000000F
-
-	ObtainLease = 0x00000010
-
-	GetUsageAllocation = 0x00000011
-
-	Activate = 0x00000012
-
-	Revoke = 0x00000013
-
-	Destroy = 0x00000014
-
-	Archive = 0x00000015
-
-	Recover = 0x00000016
-
-	Validate = 0x00000017
-
-	Query = 0x00000018
-
-	Cancel = 0x00000019
-
-	Poll = 0x0000001A
-
-	Notify = 0x0000001B
-
-	Put = 0x0000001C
-
-	RekeyKeyPair = 0x0000001D
-
-	DiscoverVersions = 0x0000001E
-
-	OperationEncrypt = 0x0000001F
-
-	OperationDecrypt = 0x00000020
-
-	OperatonSign = 0x00000021
-
-	SignatureVerify = 0x00000022
-
-	MAC = 0x00000023
-
-	OperationMACVerify = 0x00000024
-
-	RNGRetrieve = 0x00000025
-
-	RNGSeed = 0x00000026
-
-	Hash = 0x00000027
-
-	CreateSplitKey = 0x00000028
-
-	JoinSplitKey = 0x00000029
-
-	///////////////////
-
-	Continue = 0x00000001
-
-	Stop = 0x00000002
-
-	Undo = 0x00000003
-
-	/////////////////
-
-	Byte = 0x00000001
-
-	Object = 0x00000002
-
-	////////////////////
-
-	NoEncoding = 0x00000001
-
-	TTLVEncoding = 0x00000002
-
-	///////////////
-
-	GroupMemberFresh = 0x00000001
-
-	GroupMemberDefault = 0x00000002
-
-	////////Alternative Name Type//////////
-
-	UninterpretedTextString = 0x00000001
-
-	URI = 0x00000002
-
-	ObjectSerialNumber = 0x00000003
-
-	EmailAddress = 0x00000004
-
-	DNSName = 0x00000005
-
-	X500DistinguishedName = 0x00000006
-
-	IPAddress = 0x00000007
-
-	/////////Key Value Location Type////////////////
-
-	LocationUninterpretedTextString = 0x00000001
-
-	LocationURI = 0x00000002
-
-	///////////////////////////
-
-	TPMQuote = 0x00000001
-
-	TCGIntegrityReport = 0x00000002
-
-	SAMLAssertion = 0x00000003
-
-	//////////Usage Mask/////////////////
-
-	Sign = 0x00000001
-
-	Verify = 0x00000002
-
-	UsageEncrypt = 0x00000004
-
-	Decrypt = 0x00000008
-
-	WrapKey = 0x00000010
-
-	UnwrapKey = 0x00000020
-
-	Export = 0x00000040
-
-	MACGenerate = 0x00000080
-
-	MACVerify = 0x00000100
-
-	DeriveKey = 0x00000200
-
-	ContentCommitment = 0x00000400
-
-	KeyAgreement = 0x00000800
-
-	CertificateSign = 0x00001000
-
-	CRLSign = 0x00002000
-
-	GenerateCryptogram = 0x00004000
-
-	ValidateCryptogram = 0x00008000
-
-	TranslateEncrypt = 0x00010000
-
-	TranslateDecrypt = 0x00020000
-
-	TranslateWrap = 0x00040000
-
-	TranslateUnwrap = 0x00080000
-
-	//////////////////////////////////
-
-	Onlinestorage = 0x00000001
-
-	Archivalstorage = 0x00000002
 )

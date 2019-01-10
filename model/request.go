@@ -1,8 +1,10 @@
 package model
 
-import "github.com/rajnikant12345/kmip_g/objects"
+import (
+	"github.com/rajnikant12345/kmip_g/objects"
+)
 
-func ValidateRequestMessage(r *objects.KmipStruct) error {
+func ValidateRequestMessage(r *objects.KmipStruct) {
 
 }
 
