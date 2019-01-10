@@ -74,7 +74,7 @@ type KeyBlock struct {
 	KeyValue               interface{}
 	CryptographicAlgorithm *kmipbin.KmipEnum
 	CryptographicLength    *kmipbin.KmipInt
-	KeywrappingData        *KeyWrappingData
+	KeyWrappingData        *KeyWrappingData
 }
 
 func (k *KeyBlock) Unmarshal(bet *[]byte, f func(interface{}, []byte)) {
