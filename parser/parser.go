@@ -5,17 +5,14 @@ import (
 	"github.com/rajnikant12345/kmip_g/objects"
 )
 
-type KmipStruct struct {
-	RequestMessage *objects.RequestMessage
-}
 
-func Parser(rw io.ReadWriter) *KmipStruct {
+func Parser(rw io.ReadWriter) *objects.KmipStruct {
 	kmipBin, err := TTLVReader(rw)
 	if err != nil {
 		return nil
 	}
 
-	r := KmipStruct{}
+	r := objects.KmipStruct{}
 	UnmaeshalAllRequest(&r, kmipBin)
 	//r.Unmarshal(kmipBin[8:])
 	//xml.MarshalIndent(r, "", "  ")

@@ -4,6 +4,11 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 )
 
+
+type KmipStruct struct {
+	RequestMessage *RequestMessage
+}
+
 type RequestPayload struct {
 	ObjectType                   *kmipbin.KmipEnum
 	UniqueIdentifier             []*kmipbin.KmipTextString
@@ -126,10 +131,6 @@ type RequestMessage struct {
 	BatchItem     []*BatchItem
 }
 
-type KmipStruct struct {
-	RequestMessage  *RequestMessage
-	ResponseMessage *ResponseMessage
-}
 
 type KmipStructResponse struct {
 	ResponseMessage *ResponseMessage

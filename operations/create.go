@@ -1,14 +1,9 @@
 package operations
 
 import (
-	"errors"
-	"github.com/rajnikant12345/kmip_g/parser"
+	"github.com/rajnikant12345/kmip_g/objects"
 )
 
-func Create(req *parser.KmipStruct , res *parser.KmipStructResponse, batchNum int) error {
-	bi := req.GetBatcItem(batchNum)
-	if bi == nil {
-		errors.New("")
-	}
+func Create(req *objects.KmipStruct , res *objects.KmipStructResponse, batchNum int) error {
 	return nil
 }

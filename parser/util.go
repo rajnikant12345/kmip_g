@@ -100,7 +100,7 @@ func GetKMIPString(value reflect.Value) interface{} {
 	return nil
 }
 
-func UnmaeshalAllRequest(a *KmipStruct, b []byte) {
+func UnmaeshalAllRequest(a *objects.KmipStruct, b []byte) {
 	v := reflect.ValueOf(a)
 
 	typ := reflect.TypeOf(v.Elem().Field(0).Interface()).Elem()
@@ -275,7 +275,7 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 	}
 }
 
-func MarshalAllRequest(a *KmipStruct) []byte {
+func MarshalAllRequest(a *objects.KmipStruct) []byte {
 	//ty := reflect.TypeOf(*a)
 	v := reflect.ValueOf(a)
 
