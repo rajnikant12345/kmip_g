@@ -208,8 +208,8 @@ func Dummy(v *reflect.Value, bet *[]byte) *kmiperror.KmipError {
 	ty := reflect.TypeOf(v.Elem().Interface())
 
 	for i := 0; i < v.Elem().NumField(); i++ {
-		if Tags[ty.Field(i).Name] != "" {
-			tagmap[Tags[ty.Field(i).Name]] = v.Elem().Field(i)
+		if kmiptags.Tags[ty.Field(i).Name] != "" {
+			tagmap[kmiptags.Tags[ty.Field(i).Name]] = v.Elem().Field(i)
 		}
 	}
 
@@ -395,7 +395,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 			if IsKmipInt(field) {
 				var tag string
 
-				tag = Tags[ty.Field(i).Name]
+				tag = kmiptags.Tags[ty.Field(i).Name]
 
 				if tag == "" {
 					continue
@@ -404,7 +404,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 
 			} else if IsKMIPString(field) {
 				var tag string
-				tag = Tags[ty.Field(i).Name]
+				tag = kmiptags.Tags[ty.Field(i).Name]
 
 				if tag == "" {
 					continue
@@ -415,7 +415,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 				if IsKmipInt(field.Elem()) {
 					var tag string
 
-					tag = Tags[ty.Field(i).Name]
+					tag = kmiptags.Tags[ty.Field(i).Name]
 
 					if tag == "" {
 						continue
@@ -424,7 +424,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 
 				} else if IsKMIPString(field.Elem()) {
 					var tag string
-					tag = Tags[ty.Field(i).Name]
+					tag = kmiptags.Tags[ty.Field(i).Name]
 
 					if tag == "" {
 						continue
@@ -432,7 +432,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 					WriteKmipString(field.Elem(), tag, &b)
 				} else {
 					var tag string
-					tag = Tags[ty.Field(i).Name]
+					tag = kmiptags.Tags[ty.Field(i).Name]
 
 					if tag == "" {
 						continue
@@ -445,7 +445,7 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 					b.Write(bt)
 				}
 			} else {
-				tag := Tags[ty.Field(i).Name]
+				tag := kmiptags.Tags[ty.Field(i).Name]
 
 				var bt []byte
 				if field.Kind() == reflect.Slice {
@@ -493,7 +493,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				if tagin != "" {
 					tag = tagin
 				} else {
-					tag = Tags[ty.Field(i).Name]
+					tag = kmiptags.Tags[ty.Field(i).Name]
 				}
 				if tag == "" {
 					continue
@@ -505,7 +505,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				if tagin != "" {
 					tag = tagin
 				} else {
-					tag = Tags[ty.Field(i).Name]
+					tag = kmiptags.Tags[ty.Field(i).Name]
 				}
 				if tag == "" {
 					continue
@@ -513,7 +513,7 @@ func DummyMarshal(v *reflect.Value, tagin string) []byte {
 				WriteKmipString(field, tag, &b)
 
 			} else {
-				tag := Tags[ty.Field(i).Name]
+				tag := kmiptags.Tags[ty.Field(i).Name]
 
 				if tag == "420045" {
 					//fmt.Println("rajni", field.Elem().Type())
