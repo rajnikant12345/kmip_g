@@ -4,60 +4,77 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
-	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/objects"
 	"reflect"
 	"strings"
+	"github.com/rajnikant12345/kmip_g/kmiperror"
+	"github.com/rajnikant12345/kmip_g/enums/resultreason"
+	"github.com/rajnikant12345/kmip_g/kmiptags"
 )
 
-var kerror = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
-//var kerrorDuplicate = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
 
-func validateType(value reflect.Value, typ string) {
+func validateLength(b []byte) *kmiperror.KmipError  {
+	var l kmipbin.KmipLength
+	l.UnMarshalBin(b[4:8])
+	l1 := len(b[8:])
+	if int(l) > l1 {
+		return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+	}
+	return nil
+}
+
+
+func validateType(value reflect.Value, typ string) *kmiperror.KmipError {
+
+	var err = 0
+	var kerror = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
 
 	switch value.Type().String() {
 	case "*kmipbin.KmipInt":
 		if typ != "02" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipBoolean":
 		if typ != "06" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipEnum":
 		if typ != "05" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipDate":
 		if typ != "09" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipLongInt":
 		if typ != "03" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipInterval":
 		if typ != "0A" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipTextString":
 		if typ != "07" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipByteString":
 		if typ != "08" {
-			panic(kerror)
+			err = 1
 		}
 	case "*kmipbin.KmipBigInt":
 		if typ != "04" {
-			panic(kerror)
+			err = 1
 		}
 	default:
-		panic(kerror)
+		err = 1
 
 	}
+	if err != 0 {
+		return &kerror
+	}
+	return nil
 }
 
 func GetTypeString(value reflect.Value) string {
@@ -149,33 +166,6 @@ func GetKMIPString(value reflect.Value) interface{} {
 	return nil
 }
 
-func UnmaeshalAllRequest(a *objects.KmipStruct, b []byte) {
-	v := reflect.ValueOf(a)
-
-	typ := reflect.TypeOf(v.Elem().Field(0).Interface()).Elem()
-
-	k := reflect.New(typ)
-
-	b = b[8:]
-	Dummy(&k, &b)
-
-	v.Elem().Field(0).Set(k)
-
-}
-
-func UnmaeshalAllResponse(a *objects.KmipStructResponse, b []byte) {
-	v := reflect.ValueOf(a)
-
-	typ := reflect.TypeOf(v.Elem().Field(0).Interface()).Elem()
-
-	k := reflect.New(typ)
-
-	b = b[8:]
-	Dummy(&k, &b)
-
-	v.Elem().Field(0).Set(k)
-
-}
 
 func ReadKmipInt(f *reflect.Value, bet *[]byte) {
 
@@ -188,7 +178,6 @@ func ReadKmipInt(f *reflect.Value, bet *[]byte) {
 }
 
 func ReadKmipString(f *reflect.Value, bet *[]byte) {
-
 	var l kmipbin.KmipLength
 	l.UnMarshalBin((*bet)[4:8])
 	*bet = (*bet)[8:]
@@ -203,94 +192,76 @@ func ReadKmipString(f *reflect.Value, bet *[]byte) {
 func AttrMarshal(in interface{}, b []byte) {
 	v := reflect.ValueOf(in)
 	Dummy(&v, &b)
-
 }
 
-func Dummy(v *reflect.Value, bet *[]byte) {
 
-	// this map consisit of mapping between kmip tag and
-	// and a reflect.value
+func Dummy(v *reflect.Value, bet *[]byte) *kmiperror.KmipError {
+
+	funcTemp := func(bet *[]byte) reflect.Value{
+		p := new(kmipbin.KmipByteString)
+		h := reflect.ValueOf(&p).Elem()
+		ReadKmipString(&h, bet)
+		return reflect.ValueOf(h.Interface())
+	}
+
 	tagmap := make(map[string]reflect.Value)
-
-	// get the type of element inside v
 	ty := reflect.TypeOf(v.Elem().Interface())
 
-	// it must be a struct type, hence all the elements must be iterated and
-	// must be checked against a valid kmip tag
 	for i := 0; i < v.Elem().NumField(); i++ {
-
-		field := v.Elem().Field(i)
-
-		tag := Tags[ty.Field(i).Name]
-
-		if tag != "" {
-			tagmap[tag] = field
+		if Tags[ty.Field(i).Name] != "" {
+			tagmap[Tags[ty.Field(i).Name]] = v.Elem().Field(i)
 		}
 	}
 
-	// this loop is infinite as we will be iterating till we reach end of input buffer
-	// or an unwanted element is encountered.
 	for {
-		// check the length of input buffer
 		if len((*bet)) < 8 {
 			break
 		}
-		// get the tag from buffer
 		tag := strings.ToUpper(hex.EncodeToString((*bet)[:3]))
-
-		// find the tag in tagmap
 		f, ok := tagmap[tag]
 		if !ok {
-			return
+			return nil
 		} else {
-
 			if !f.IsNil() && reflect.TypeOf(f.Interface()).Kind() != reflect.Slice {
-				fmt.Println(f.String())
-				panic(kerror)
+				return & kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "The same field is contained in a header/batch item/payload more than once"}
 			}
-			// key value
-			if tag == "420045" {
+			if tag == kmiptags.Tags["KeyValue"] {
+				// keyvalue can be a byte string or structure
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
-					p := new(kmipbin.KmipByteString)
-					h := reflect.ValueOf(&p).Elem()
-					ReadKmipString(&h, bet)
-					k := reflect.ValueOf(h.Interface())
-					f.Set(k)
+					f.Set(funcTemp(bet))
 					continue
 				} else {
 					p := new(objects.KeyValue)
 					f.Set(reflect.ValueOf(&p).Elem())
 				}
 			}
-
-			// key material
-			if tag == "420043" {
+			if tag == kmiptags.Tags["KeyMaterial"]  {
 				if hex.EncodeToString((*bet)[3:4]) != "01" {
-					p := new(kmipbin.KmipByteString)
-					h := reflect.ValueOf(&p).Elem()
-					ReadKmipString(&h, bet)
-					k := reflect.ValueOf(h.Interface())
-					f.Set(k)
+					f.Set(funcTemp(bet))
 					continue
 				} else {
 					p := new(objects.TransparentKey)
 					f.Set(reflect.ValueOf(&p).Elem())
 				}
 			}
-
 			// attribute array needs special parsing
-			if tag == "420008" {
+			if tag == kmiptags.Tags["Attribute"] {
 				a := &objects.Attribute{}
 				a.Unmarshal(bet, AttrMarshal)
 				f.Set(reflect.Append(f, reflect.ValueOf(a)))
 			} else if IsKmipInt(f) {
-				validateType( f, hex.EncodeToString((*bet)[3:4]) )
+				err := validateType( f, hex.EncodeToString((*bet)[3:4]) )
+				if err != nil {
+					return err
+				}
 				ReadKmipInt(&f, bet)
 			} else if IsKMIPString(f) {
-				validateType( f, hex.EncodeToString((*bet)[3:4]) )
+				err := validateType( f, hex.EncodeToString((*bet)[3:4]) )
+				if err != nil {
+					return err
+				}
 				ReadKmipString(&f, bet)
 			} else {
-
 				typ := reflect.TypeOf(f.Interface())
 				//(*bet) = (*bet)[8:]
 				if typ.Kind() == reflect.Ptr {
@@ -304,40 +275,58 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 						if IsKmipInt(k) {
 							p := GetKmipInt(k)
 							h := reflect.ValueOf(&p).Elem()
-							validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
+							err := validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
+							if err != nil {
+								return err
+							}
 							ReadKmipInt(&h, bet)
 							k = reflect.ValueOf(h.Interface())
 						} else if IsKMIPString(k) {
-							//fmt.Println(k.Type(), k.Elem().Type())
 							p := GetKMIPString(k)
 							h := reflect.ValueOf(&p).Elem()
-							validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
-							ReadKmipString(&h, bet)
 
+							err := validateLength((*bet))
+							if err != nil {
+								return err
+							}
+							err = validateType(h.Elem(), hex.EncodeToString((*bet)[3:4]))
+							if err != nil {
+								return err
+							}
+							ReadKmipString(&h, bet)
 							k = reflect.ValueOf(h.Interface())
 						}
 					} else {
-
+						err := validateLength((*bet))
+						if err != nil {
+							return err
+						}
 						typstr := hex.EncodeToString((*bet)[3:4])
 						if typstr != "01" {
-							panic(kerror)
+							return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
 						}
-
 						(*bet) = (*bet)[8:]
-						Dummy(&k, bet)
+						err = Dummy(&k, bet)
+						if err != nil {
+							return err
+						}
 					}
 				} else {
-
+					err := validateLength((*bet))
+					if err != nil {
+						return err
+					}
 					typstr := hex.EncodeToString((*bet)[3:4])
 					if typstr != "01" {
-						panic(kerror)
+						return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
 					}
 					(*bet) = (*bet)[8:]
 					k = reflect.New(typ)
-					Dummy(&k, bet)
+					err = Dummy(&k, bet)
+					if err != nil {
+						return err
+					}
 				}
-
-				// in case of slice append it to it
 				if typ.Kind() == reflect.Slice {
 					f.Set(reflect.Append(f, k))
 				} else {
@@ -345,24 +334,10 @@ func Dummy(v *reflect.Value, bet *[]byte) {
 				}
 			}
 		}
-
 	}
+	return nil
 }
 
-func MarshalAllRequest(a *objects.KmipStruct) []byte {
-	//ty := reflect.TypeOf(*a)
-	v := reflect.ValueOf(a)
-
-	return DummyMarshal(&v, "")
-
-}
-
-func MarshalAllResponse(a *objects.KmipStructResponse) []byte {
-	//ty := reflect.TypeOf(*a)
-	v := reflect.ValueOf(a)
-	return DummyMarshal(&v, "")
-
-}
 
 func WriteKmipInt(field reflect.Value, tag string, b *bytes.Buffer) {
 	byt := field.MethodByName("MarshalBin").Call(nil)

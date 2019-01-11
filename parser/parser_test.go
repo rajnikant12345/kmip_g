@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"encoding/hex"
 	"testing"
-	"encoding/xml"
-	"fmt"
 	"strings"
+	"github.com/rajnikant12345/kmip_g/objects"
 )
 
 /////////////// Create Destroy /////////////////////////////////
@@ -81,15 +80,27 @@ func TestPackUnpackResponse(t *testing.T) {
 			b := bytes.Buffer{}
 			d, _ := hex.DecodeString(s)
 			b.Write(d)
-			r := ResPonseParser(&b)
-			x,_ := xml.MarshalIndent(r, "", "  ")
-			fmt.Println(string(x))
-			data := MarshalAllResponse(r)
-			fmt.Println(strings.ToUpper(hex.EncodeToString(data)))
-			fmt.Println(strings.ToUpper(s))
-			if strings.ToUpper(hex.EncodeToString(data)) != strings.ToUpper(s) {
+
+			decoder,_ := NewDecoder(&b)
+
+			kr := objects.KmipStructResponse{}
+
+			decoder.DecodeResponse(&kr)
+
+
+			out := bytes.Buffer{}
+
+			encoder,_ := NewEncoder(&out)
+
+			encoder.Encode(&kr)
+
+			t.Log(strings.ToUpper(hex.EncodeToString(out.Bytes())))
+			t.Log(strings.ToUpper(s))
+
+			if strings.ToUpper(hex.EncodeToString(out.Bytes())) != strings.ToUpper(s) {
 				t.FailNow()
 			}
+
 		})
 
 	}
@@ -220,17 +231,30 @@ func TestPackUnpackRequest(t *testing.T) {
 			b := bytes.Buffer{}
 			d, _ := hex.DecodeString(s)
 			b.Write(d)
-			r := Parser(&b)
-			x,_ := xml.MarshalIndent(r, "", "  ")
-			fmt.Println(string(x))
-			data := MarshalAllRequest(r)
-			fmt.Println(strings.ToUpper(hex.EncodeToString(data)))
-			fmt.Println(strings.ToUpper(s))
-			if strings.ToUpper(hex.EncodeToString(data)) != strings.ToUpper(s) {
+
+			decoder,_ := NewDecoder(&b)
+
+			kr := objects.KmipStruct{}
+
+			decoder.Decode(&kr)
+
+
+			out := bytes.Buffer{}
+
+			encoder,_ := NewEncoder(&out)
+
+			encoder.EncodeRequest(&kr)
+
+			t.Log(strings.ToUpper(hex.EncodeToString(out.Bytes())))
+			t.Log(strings.ToUpper(s))
+
+			if strings.ToUpper(hex.EncodeToString(out.Bytes())) != strings.ToUpper(s) {
 				t.FailNow()
 			}
+
 		})
 
 	}
+
 }
 

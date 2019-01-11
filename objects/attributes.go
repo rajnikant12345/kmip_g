@@ -115,16 +115,12 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 	l.UnMarshalBin((*bet)[4:8])
 	le := kmipbin.PadLength(int(l))
 	////////////////////////////////////////////
-
 	a.data = make([]byte, 8+le)
 	copy(a.data, (*bet)[:8+le])
-
 	/////////////////////////////////////////////
 	*bet = (*bet)[8+le:]
-
 	/////////////////////////////////////////////////////
 	a.function = f
-
 	a.Unpack(a.data)
 }
 
