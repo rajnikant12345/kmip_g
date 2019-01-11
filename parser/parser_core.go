@@ -375,9 +375,7 @@ func WriteKmipString(field reflect.Value, tag string, b *bytes.Buffer) {
 }
 
 func MarshalInside(a interface{}) []byte {
-	//ty := reflect.TypeOf(*a)
 	v := reflect.ValueOf(a)
-
 	return DummyMarshalDup(&v)
 
 }
@@ -388,9 +386,6 @@ func DummyMarshalDup(v *reflect.Value) []byte {
 
 	for i := 0; i < v.Elem().NumField(); i++ {
 		field := v.Elem().Field(i)
-		//fmt.Println("Rajni....",ty.Field(i).Name)
-		//fmt.Println(field.Kind())
-
 		if ty.Field(i).Name == "data" || ty.Field(i).Name == "function" {
 			continue
 		}

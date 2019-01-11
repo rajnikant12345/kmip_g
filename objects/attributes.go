@@ -62,8 +62,6 @@ func (a *Attribute) Unpack(b []byte) {
 	a.AttributeName = &AttributeName
 	b = b[le:]
 
-	/////
-
 	if hex.EncodeToString(b[:3]) == kmiptags.Tags["AttributeIndex"] {
 		b = b[8:]
 		var index kmipbin.KmipInt
@@ -71,7 +69,6 @@ func (a *Attribute) Unpack(b []byte) {
 		a.AttributeIndex = &index
 		b = b[8:]
 	}
-	///
 
 	tty.UnMarshalBin(b[:4])
 	l.UnMarshalBin(b[4:8])
@@ -99,14 +96,12 @@ func (a *Attribute) Unpack(b []byte) {
 		}else {
 			a.AttributeValue.(kmipbin.BaseMarshalString).UnMarshalBin(b[:le] , int(l))
 			b = b[le:]
-			//fmt.Println(*a.AttributeName)
 		}
 	default:
 		a.function(a.AttributeValue , b)
 	}
 
 	b = b[len(b):]
-	//}
 }
 
 
@@ -126,15 +121,10 @@ func (a *Attribute) Unmarshal(bet *[]byte , f func(interface{} , []byte)) {
 
 func (a *Attribute) Marshal(f func(interface{}) []byte ) []byte {
 	out := bytes.Buffer{}
-	//fmt.Println("============================")
 	b := f(a)
-
-	//fmt.Println("============================")
-
 	bb,_ := hex.DecodeString("42000801"+fmt.Sprintf("%08x",(len(b))))
 	out.Write(bb)
 	out.Write(b)
-	//fmt.Println(hex.EncodeToString(out.Bytes()))
 	return out.Bytes()
 }
 
