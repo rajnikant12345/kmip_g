@@ -104,6 +104,7 @@ type BatchItem struct {
 	MessageExtension             *MessageExtension
 }
 
+
 type ProtocolVersion struct {
 	ProtocolVersionMajor *kmipbin.KmipInt
 	ProtocolVersionMinor *kmipbin.KmipInt
@@ -147,4 +148,37 @@ type ResponseHeader struct {
 	Nonce           *Nonce
 	AttestationType *kmipbin.KmipEnum
 	BatchCount      *kmipbin.KmipInt
+}
+
+
+func (r *KmipStruct) GetRequestMessage() *RequestMessage {
+	if r.RequestMessage != nil {
+		return r.RequestMessage
+	}
+	return nil
+}
+
+func (r *RequestMessage) GetRequestHeader() *RequestHeader {
+	if r.RequestHeader != nil {
+		return r.RequestHeader
+	}
+	return nil
+}
+
+func (r *ResponseHeader) SetBatchCount(val kmipbin.KmipInt) {
+	r.BatchCount = &val
+}
+
+func (r *RequestMessage) GetBatchList( ) []*BatchItem {
+	if len(r.BatchItem) != 0 {
+		return r.BatchItem
+	}
+	return nil
+}
+
+func ( r *BatchItem) GetRequestPayLoad() *RequestPayload {
+	if r.ResponsePayload != nil {
+		return r.RequestPayload
+	}
+	return nil
 }

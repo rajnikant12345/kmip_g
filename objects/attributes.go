@@ -18,7 +18,6 @@ type Attribute struct {
 }
 
 
-
 func MakeType(val uint32) interface{} {
 
 	switch val {

@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"strings"
 	"github.com/rajnikant12345/kmip_g/kmiperror"
-	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmiptags"
 )
 
@@ -19,7 +18,7 @@ func validateLength(b []byte) *kmiperror.KmipError  {
 	l.UnMarshalBin(b[4:8])
 	l1 := len(b[8:])
 	if int(l) > l1 {
-		return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+		return &kmiperror.InvalidMessageStructure
 	}
 	return nil
 }
@@ -28,7 +27,7 @@ func validateLength(b []byte) *kmiperror.KmipError  {
 func validateType(value reflect.Value, typ string) *kmiperror.KmipError {
 
 	var err = 0
-	var kerror = kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+	var kerror = kmiperror.InvalidMessageStructure
 
 	switch value.Type().String() {
 	case "*kmipbin.KmipInt":
@@ -223,7 +222,9 @@ func Dummy(v *reflect.Value, bet *[]byte) *kmiperror.KmipError {
 			return nil
 		} else {
 			if !f.IsNil() && reflect.TypeOf(f.Interface()).Kind() != reflect.Slice {
-				return & kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "The same field is contained in a header/batch item/payload more than once"}
+				err := kmiperror.InvalidMessageStructure
+				err.ResultMessage = "The same field is contained in a header/batch item/payload more than once"
+				return &err
 			}
 			if tag == kmiptags.Tags["KeyValue"] {
 				// keyvalue can be a byte string or structure
@@ -303,7 +304,7 @@ func Dummy(v *reflect.Value, bet *[]byte) *kmiperror.KmipError {
 						}
 						typstr := hex.EncodeToString((*bet)[3:4])
 						if typstr != "01" {
-							return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+							return &kmiperror.InvalidMessageStructure
 						}
 						(*bet) = (*bet)[8:]
 						err = Dummy(&k, bet)
@@ -318,7 +319,7 @@ func Dummy(v *reflect.Value, bet *[]byte) *kmiperror.KmipError {
 					}
 					typstr := hex.EncodeToString((*bet)[3:4])
 					if typstr != "01" {
-						return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+						return &kmiperror.InvalidMessageStructure
 					}
 					(*bet) = (*bet)[8:]
 					k = reflect.New(typ)

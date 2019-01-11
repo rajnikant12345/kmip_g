@@ -4,7 +4,6 @@ import (
 	"github.com/rajnikant12345/kmip_g/objects"
 	"reflect"
 	"github.com/rajnikant12345/kmip_g/kmiperror"
-	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 )
 
 
@@ -19,7 +18,7 @@ func UnmaeshalAllRequest(a *objects.KmipStruct, b []byte) *kmiperror.KmipError  
 	b = b[8:]
 	err = Dummy(&k, &b)
 	if err != nil {
-		return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+		return &kmiperror.InvalidMessageStructure
 	}
 	v.Elem().Field(0).Set(k)
 	return nil
@@ -31,12 +30,12 @@ func UnmaeshalAllResponse(a *objects.KmipStructResponse, b []byte)  *kmiperror.K
 	k := reflect.New(typ)
 	err := validateLength(b)
 	if err != nil {
-		return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed"}
+		return &kmiperror.MessageCannotBeParsed
 	}
 	b = b[8:]
 	err = Dummy(&k, &b)
 	if err != nil {
-		return &kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure"}
+		return &kmiperror.InvalidMessageStructure
 	}
 	v.Elem().Field(0).Set(k)
 	return nil
