@@ -13,5 +13,5 @@ type KmipError struct {
 }
 
 
-var MessageCannotBeParsed = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed", -1}
-var InvalidMessageStructure = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure" , -1}
+var MessageCannotBeParsed = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed", 0}
+var InvalidMessageStructure = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure" , 0}

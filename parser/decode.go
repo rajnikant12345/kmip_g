@@ -3,9 +3,8 @@ package parser
 import "io"
 import (
 	"errors"
-	"github.com/rajnikant12345/kmip_g/objects"
 	"github.com/rajnikant12345/kmip_g/kmiperror"
-	"github.com/rajnikant12345/kmip_g/enums/resultreason"
+	"github.com/rajnikant12345/kmip_g/objects"
 )
 
 
@@ -25,7 +24,7 @@ func (e *KMIPDecoder) Decode( kmipRequest *objects.KmipStruct  ) *kmiperror.Kmip
 	kmipData, err := TTLVReader(e.reader)
 
 	if err != nil {
-		return & kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed"}
+		return &kmiperror.MessageCannotBeParsed
 	}
 	return UnmaeshalAllRequest(kmipRequest, kmipData)
 }
@@ -35,7 +34,7 @@ func (e *KMIPDecoder) DecodeResponse( kmipResponse *objects.KmipStructResponse  
 	kmipData, err := TTLVReader(e.reader)
 
 	if err != nil {
-		return & kmiperror.KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed"}
+		return &kmiperror.MessageCannotBeParsed
 	}
 	return UnmaeshalAllResponse(kmipResponse, kmipData)
 }
