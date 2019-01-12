@@ -73,7 +73,7 @@ func processRequest(k *objects.KmipStruct) ( *objects.KmipStructResponse, *kmipe
 		if operation == nil {
 			batch := objects.BatchItem{}
 			batch.ResultMessage = &kmiperror.InvalidMessageStructure.ResultMessage
-			batch.ResultReason = &kmiperror.InvalidMessageStructure.ErrorCode
+			batch.ResultReason = &kmiperror.InvalidMessageStructure.ResultReason
 			batch.ResultStatus = &kmiperror.InvalidMessageStructure.ResultStatus
 			res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , &batch)
 
@@ -85,7 +85,7 @@ func processRequest(k *objects.KmipStruct) ( *objects.KmipStructResponse, *kmipe
 				err.ResultMessage = "Server does not support operation"
 				batchres := objects.BatchItem{}
 				batchres.ResultMessage = &err.ResultMessage
-				batchres.ResultReason = &err.ErrorCode
+				batchres.ResultReason = &err.ResultReason
 				batchres.ResultStatus = &err.ResultStatus
 				batchres.Operation = batch.Operation
 				res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , &batchres)
@@ -112,7 +112,7 @@ func MakeKmipResponse(err  *kmiperror.KmipError ) *objects.KmipStructResponse {
 	batch := objects.BatchItem{}
 
 	batch.ResultMessage = &err.ResultMessage
-	batch.ResultReason = &err.ErrorCode
+	batch.ResultReason = &err.ResultReason
 	batch.ResultStatus = &err.ResultStatus
 	res.ResponseMessage.BatchItem = append( res.ResponseMessage.BatchItem , &batch )
 

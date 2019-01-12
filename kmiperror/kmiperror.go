@@ -6,12 +6,12 @@ import (
 )
 
 type KmipError struct {
-	ErrorCode     kmipbin.KmipEnum
+	ResultReason  kmipbin.KmipEnum
 	ResultStatus  kmipbin.KmipEnum
 	ResultMessage kmipbin.KmipTextString
 	Operation     kmipbin.KmipEnum
 }
 
 
-var MessageCannotBeParsed = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Message cannot be parsed", 0}
-var InvalidMessageStructure = KmipError{resultreason.OperationFailed, resultreason.InvalidMessage, "Invalid Message structure" , 0}
+var MessageCannotBeParsed = KmipError{resultreason.InvalidMessage, resultreason.OperationFailed, "Message cannot be parsed", 0}
+var InvalidMessageStructure = KmipError{resultreason.InvalidMessage, resultreason.OperationFailed, "Invalid Message structure" , 0}
