@@ -9,5 +9,7 @@ type OpCreate struct {
 }
 
 func (op * OpCreate) DoOp( r *objects.KmipStruct , batchNum int) *objects.BatchItem {
-	return nil
+	batch := objects.BatchItem{}
+
+	return &batch
 }
