@@ -4,21 +4,13 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/objects"
-	"fmt"
 )
 
-type OpCreate struct {
+type OpRegister struct {
 }
 
-func prepareCreateEroorResponse(kmipError kmiperror.KmipError) *objects.BatchItem {
-	resBatch := objects.BatchItem{}
-	resBatch.ResultStatus = &kmiperror.InvalidMessageStructure.ResultStatus
-	resBatch.ResultMessage = &kmiperror.InvalidMessageStructure.ResultMessage
-	resBatch.ResultReason = &kmiperror.InvalidMessageStructure.ResultReason
-	return &resBatch
-}
 
-func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem {
+func (op *OpRegister) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem {
 
 	var AttributeMap = make(map[kmipbin.KmipTextString]interface{})
 
@@ -52,19 +44,10 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 			AttributeMap[*v.AttributeName] = v.AttributeValue
 		}
 	}
-	var contactInformation *kmipbin.KmipTextString
-	var usageMask *kmipbin.KmipInt
-	if val,ok :=  AttributeMap["Contact Information"];ok {
-		contactInformation = val.(*kmipbin.KmipTextString)
-	}
-
-	if val,ok :=  AttributeMap["Cryptographic Usage Mask"];ok {
-		usageMask = val.(*kmipbin.KmipInt)
-	}
 
 
-
-
+	//oo,_ := json.Marshal(AttributeMap)
+	//fmt.Println(string(oo))
 
 	resBatch := objects.BatchItem{}
 	return &resBatch
