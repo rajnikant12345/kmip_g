@@ -4,6 +4,7 @@ import (
 	"github.com/rajnikant12345/kmip_g/objects"
 	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 )
 
 const ProtoMajor = 1
@@ -82,6 +83,7 @@ func processRequest(k *objects.KmipStruct) ( *objects.KmipStructResponse, *kmipe
 			if !ok {
 				err := kmiperror.InvalidMessageStructure
 				err.Operation = *batch.Operation
+				err.ResultReason = resultreason.OperationNotSupported
 				err.ResultMessage = "Server does not support operation"
 				batchres := objects.BatchItem{}
 				batchres.ResultMessage = &err.ResultMessage
