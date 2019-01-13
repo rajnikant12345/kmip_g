@@ -27,6 +27,8 @@ func KmipLoop(conn io.ReadWriter) {
 	encd.Encode(res)
 }
 
+/*
+
 func main() {
 
 	d := []string{
@@ -157,4 +159,4 @@ func main() {
 
 
 
-}
+}*/
