@@ -59,6 +59,8 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 
 	var AttributeMap = make(map[string]interface{})
 
+	var NameList []*objects.Name
+
 	batchReq := r.GetRequestMessage().BatchItem[batchNum]
 
 	if batchReq == nil || batchReq.RequestPayload == nil {
@@ -77,7 +79,12 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 				if ok && *v.AttributeName != "Name" {
 					return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 				}
-				AttributeMap[name] = v.AttributeValue
+
+				if *v.AttributeName == "Name" {
+					NameList = append(NameList , v.AttributeValue.(*objects.Name))
+				}else {
+					AttributeMap[name] = v.AttributeValue
+				}
 			}
 		}
 	}
@@ -89,7 +96,12 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 			if ok && *v.AttributeName != "Name"  {
 				return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 			}
-			AttributeMap[name] = v.AttributeValue
+
+			if *v.AttributeName == "Name" {
+				NameList = append(NameList , v.AttributeValue.(*objects.Name))
+			} else {
+				AttributeMap[name] = v.AttributeValue
+			}
 		}
 	}
 
@@ -99,7 +111,7 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid , err := callbacks.CreateCallBack(context.Background(), AttributeMap)
+	uid , err := callbacks.CreateCallBack(context.Background(), AttributeMap , NameList)
 
 	if err != nil {
 		er := kmiperror.InvalidMessageStructure
