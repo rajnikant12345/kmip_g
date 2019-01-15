@@ -48,7 +48,9 @@ type OpDestroy struct {
 }
 
 
-func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
+
+
+func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString) *objects.BatchItem {
 
 	fmt.Println("=====================hitting destroy====================")
 
@@ -58,14 +60,12 @@ func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	if len(batchReq.RequestPayload.UniqueIdentifier) == 0 {
+	id := ReadUniqueIdOfPayLoad(batchReq.RequestPayload , idPlaceHolder)
+	if id == nil {
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	if batchReq.RequestPayload.UniqueIdentifier[0] == nil {
-		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
-	}
-
+	batchReq.RequestPayload.UniqueIdentifier = append( batchReq.RequestPayload.UniqueIdentifier , id)
 
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
@@ -82,6 +82,7 @@ func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	resBatch.ResultStatus = &resultStatus
 	resBatch.Operation = batchReq.Operation
 	resBatch.UniqueBatchItemID = batchReq.UniqueBatchItemID
+	*idPlaceHolder = ""
 	resBatch.ResponsePayload.UniqueIdentifier = append(resBatch.ResponsePayload.UniqueIdentifier, &uidk)
 	return &resBatch
 }

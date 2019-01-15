@@ -4,7 +4,6 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 )
 
-
 type KmipStruct struct {
 	RequestMessage *RequestMessage
 }
@@ -12,76 +11,78 @@ type KmipStruct struct {
 type RequestPayload struct {
 	ObjectType                   *kmipbin.KmipEnum
 	UniqueIdentifier             []*kmipbin.KmipTextString
-	CertificateRequestType		*kmipbin.KmipEnum
-	CertificateRequest			*kmipbin.KmipByteString
-	KeyWrappingSpecification	*KeyWrappingSpecification
-	SplitKeyParts				*kmipbin.KmipInt
-	SplitKeyThreshold			*kmipbin.KmipInt
-	SplitKeyMethod				*kmipbin.KmipEnum
+	CertificateRequestType       *kmipbin.KmipEnum
+	CertificateRequest           *kmipbin.KmipByteString
+	KeyWrappingSpecification     *KeyWrappingSpecification
+	SplitKeyParts                *kmipbin.KmipInt
+	SplitKeyThreshold            *kmipbin.KmipInt
+	SplitKeyMethod               *kmipbin.KmipEnum
 	TemplateAttribute            *TemplateAttribute
-	SplitKey					*SplitKey
-	PutFunction					*kmipbin.KmipEnum
-	SymmetricKey				*SymmetricKey
+	SplitKey                     *SplitKey
+	PutFunction                  *kmipbin.KmipEnum
+	SymmetricKey                 *SymmetricKey
 	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
-	CommonTemplateAttribute		 *CommonTemplateAttribute
+	CommonTemplateAttribute      *CommonTemplateAttribute
 	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
 	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
 	Template                     *Template
 	SecretData                   *SecretData
-	PGPKey						*PGPKey
+	PGPKey                       *PGPKey
 	PrivateKey                   *PrivateKey
 	PublicKey                    *PublicKey
 	QueryFunction                []*kmipbin.KmipEnum
-	AttributeName				 []*kmipbin.KmipTextString
-	RevocationReason			 *RevocationReason
-	CompromiseOccurrenceDate	*kmipbin.KmipDate
-	Certificate					*Certificate
-	KeyFormatType				*kmipbin.KmipEnum
-	ProtocolVersion				[]*ProtocolVersion
-	UsageLimitsCount			*kmipbin.KmipLongInt
+	AttributeName                []*kmipbin.KmipTextString
+	RevocationReason             *RevocationReason
+	CompromiseOccurrenceDate     *kmipbin.KmipDate
+	Certificate                  *Certificate
+	KeyFormatType                *kmipbin.KmipEnum
+	ProtocolVersion              []*ProtocolVersion
+	UsageLimitsCount             *kmipbin.KmipLongInt
+	CryptographicUsageMask       *kmipbin.KmipInt
+	LeaseTime					*kmipbin.KmipInterval
 }
 
 type ServerInformation struct {
-
 }
 
 type ResponsePayload struct {
-	Operation					[]*kmipbin.KmipEnum
+	Operation                    []*kmipbin.KmipEnum
 	ObjectType                   []*kmipbin.KmipEnum
 	UniqueIdentifier             []*kmipbin.KmipTextString
-	PrivateKeyUniqueIdentifier	 []*kmipbin.KmipTextString
-	PublicKeyUniqueIdentifier	[]*kmipbin.KmipTextString
-	CertificateRequestType		*kmipbin.KmipEnum
-	CertificateRequest			*kmipbin.KmipByteString
-	KeyWrappingSpecification	*KeyWrappingSpecification
-	SplitKeyParts				*kmipbin.KmipInt
-	SplitKeyThreshold			*kmipbin.KmipInt
-	SplitKeyMethod				*kmipbin.KmipEnum
+	PrivateKeyUniqueIdentifier   []*kmipbin.KmipTextString
+	PublicKeyUniqueIdentifier    []*kmipbin.KmipTextString
+	CertificateRequestType       *kmipbin.KmipEnum
+	CertificateRequest           *kmipbin.KmipByteString
+	KeyWrappingSpecification     *KeyWrappingSpecification
+	SplitKeyParts                *kmipbin.KmipInt
+	SplitKeyThreshold            *kmipbin.KmipInt
+	SplitKeyMethod               *kmipbin.KmipEnum
 	TemplateAttribute            *TemplateAttribute
-	SplitKey					*SplitKey
-	PutFunction					*kmipbin.KmipEnum
-	SymmetricKey				*SymmetricKey
+	SplitKey                     *SplitKey
+	PutFunction                  *kmipbin.KmipEnum
+	SymmetricKey                 *SymmetricKey
 	Attribute                    []*Attribute
 	AsynchronousCorrelationValue *kmipbin.KmipByteString
-	CommonTemplateAttribute		 *CommonTemplateAttribute
+	CommonTemplateAttribute      *CommonTemplateAttribute
 	PrivateKeyTemplateAttribute  *PrivateKeyTemplateAttribute
 	PublicKeyTemplateAttribute   *PublicKeyTemplateAttribute
 	Template                     *Template
 	SecretData                   *SecretData
-	PGPKey						*PGPKey
+	PGPKey                       *PGPKey
 	PrivateKey                   *PrivateKey
 	PublicKey                    *PublicKey
 	QueryFunction                []*kmipbin.KmipEnum
-	AttributeName				 []*kmipbin.KmipTextString
-	RevocationReason			 *RevocationReason
-	CompromiseOccurrenceDate	*kmipbin.KmipDate
-	Certificate					*Certificate
-	KeyFormatType				*kmipbin.KmipEnum
-	ProtocolVersion				[]*ProtocolVersion
-	VendorIdentification		*kmipbin.KmipTextString
-	ServerInformation			*ServerInformation
-	UsageLimitsCount			*kmipbin.KmipLongInt
+	AttributeName                []*kmipbin.KmipTextString
+	RevocationReason             *RevocationReason
+	CompromiseOccurrenceDate     *kmipbin.KmipDate
+	Certificate                  *Certificate
+	KeyFormatType                *kmipbin.KmipEnum
+	ProtocolVersion              []*ProtocolVersion
+	VendorIdentification         *kmipbin.KmipTextString
+	ServerInformation            *ServerInformation
+	UsageLimitsCount             *kmipbin.KmipLongInt
+	CryptoGraphicUsageMask       *kmipbin.KmipInt
 }
 
 type MessageExtension struct {
@@ -104,7 +105,6 @@ type BatchItem struct {
 	RequestPayload               *RequestPayload
 	MessageExtension             *MessageExtension
 }
-
 
 type ProtocolVersion struct {
 	ProtocolVersionMajor *kmipbin.KmipInt
@@ -133,7 +133,6 @@ type RequestMessage struct {
 	BatchItem     []*BatchItem
 }
 
-
 type KmipStructResponse struct {
 	ResponseMessage *ResponseMessage
 }
@@ -150,7 +149,6 @@ type ResponseHeader struct {
 	AttestationType *kmipbin.KmipEnum
 	BatchCount      *kmipbin.KmipInt
 }
-
 
 func (r *KmipStruct) GetRequestMessage() *RequestMessage {
 	if r.RequestMessage != nil {
@@ -170,14 +168,14 @@ func (r *ResponseHeader) SetBatchCount(val kmipbin.KmipInt) {
 	r.BatchCount = &val
 }
 
-func (r *RequestMessage) GetBatchList( ) []*BatchItem {
+func (r *RequestMessage) GetBatchList() []*BatchItem {
 	if len(r.BatchItem) != 0 {
 		return r.BatchItem
 	}
 	return nil
 }
 
-func ( r *BatchItem) GetRequestPayLoad() *RequestPayload {
+func (r *BatchItem) GetRequestPayLoad() *RequestPayload {
 	if r.ResponsePayload != nil {
 		return r.RequestPayload
 	}

@@ -67,6 +67,9 @@ func processRequest(k *objects.KmipStruct , ks *kmipservice.KmipService ) ( *obj
 	batchLength := kmipbin.KmipInt(len(batchList))
 	res.ResponseMessage.ResponseHeader.SetBatchCount(batchLength)
 
+
+	var kmipIdPlaceHolder kmipbin.KmipTextString
+
 	for i,batch := range batchList {
 		if batch == nil {
 			return nil , &kmiperror.InvalidMessageStructure
@@ -93,7 +96,7 @@ func processRequest(k *objects.KmipStruct , ks *kmipservice.KmipService ) ( *obj
 				batchres.Operation = batch.Operation
 				res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , &batchres)
 			} else {
-				batchres := op.DoOp(k,i,ks)
+				batchres := op.DoOp(k,i,ks , &kmipIdPlaceHolder)
 				res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , batchres)
 			}
 		}

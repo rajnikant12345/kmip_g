@@ -8,6 +8,7 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"fmt"
 	"github.com/rajnikant12345/kmip_g/kmipservice"
+	"github.com/rajnikant12345/kmip_g/enums/operation"
 )
 
 /*
@@ -48,7 +49,7 @@ type OpCheck struct {
 }
 
 
-func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
+func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString ) *objects.BatchItem {
 
 	fmt.Println("=====================hitting check op====================")
 
@@ -58,39 +59,42 @@ func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.Km
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	if len(batchReq.RequestPayload.UniqueIdentifier) == 0 {
+	id := ReadUniqueIdOfPayLoad(batchReq.RequestPayload , idPlaceHolder)
+	if id == nil {
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
-	}
-
-	if batchReq.RequestPayload.UniqueIdentifier[0] == nil {
-		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
-	}
-
-
-	AttributeMap, NameList, err := ReadTemplateAttributes( batchReq.RequestPayload.TemplateAttribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
-	}
-
-
-	AttributeMap1, NameList1, err := ReadAttributes( batchReq.RequestPayload.Attribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
-	}
-
-	NameList = append(NameList,NameList1...)
-
-	for k, v := range AttributeMap1 {
-		AttributeMap[k] = v
 	}
 
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid , errs := ks.CheckCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]), AttributeMap )
 
-	if uid != "" {
+	uid , attrmap , errs := ks.CheckCallBack(context.Background() , string(*id) )
+
+	if errs.ResultReason != 0 {
 		return prepareCreateEroorResponse(errs)
+	}
+
+	_ , ok := attrmap["Cryptographic Usage Mask"]
+
+	if !ok {
+		err := kmiperror.IllegalOperationStructure
+		err.Operation = operation.Check
+		err.ResultMessage = "Check cannot be performed: object has no 'CryptographicUsageMask'"
+		return prepareCreateEroorResponse(err)
+	}
+
+
+	if batchReq.RequestPayload.CryptographicUsageMask != nil {
+		mask := int(*batchReq.RequestPayload.CryptographicUsageMask)
+		usageMaks := attrmap["Cryptographic Usage Mask"].(int)
+		fmt.Println(mask , usageMaks)
+		if (mask & usageMaks) == 0 {
+			err := kmiperror.PermissionDenied
+			err.Operation = operation.Check
+			err.ResultMessage = "'Cryptographic Usage Mask' prohibited"
+			return prepareCreateEroorResponse(err)
+		}
+
 	}
 
 	uidk := kmipbin.KmipTextString(uid)
@@ -98,6 +102,7 @@ func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.Km
 	resBatch.ResultStatus = &resultStatus
 	resBatch.Operation = batchReq.Operation
 	resBatch.UniqueBatchItemID = batchReq.UniqueBatchItemID
+	*idPlaceHolder = ""
 	resBatch.ResponsePayload.UniqueIdentifier = append(resBatch.ResponsePayload.UniqueIdentifier, &uidk)
 	return &resBatch
 }

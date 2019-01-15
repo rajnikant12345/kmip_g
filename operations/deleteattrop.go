@@ -48,7 +48,7 @@ type OpDelAttr struct {
 }
 
 
-func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
+func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString) *objects.BatchItem {
 
 	fmt.Println("=====================hitting del attr op====================")
 
@@ -58,11 +58,8 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	if len(batchReq.RequestPayload.UniqueIdentifier) == 0 {
-		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
-	}
-
-	if batchReq.RequestPayload.UniqueIdentifier[0] == nil {
+	id := ReadUniqueIdOfPayLoad(batchReq.RequestPayload , idPlaceHolder)
+	if id == nil {
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
@@ -101,7 +98,7 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid ,attr , errs := ks.DeleteAttributeCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]), attrlist )
+	uid ,attr , errs := ks.DeleteAttributeCallBack(context.Background() , string(*id), attrlist )
 
 	if uid != "" {
 		return prepareCreateEroorResponse(errs)
@@ -117,5 +114,6 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	resBatch.Operation = batchReq.Operation
 	resBatch.UniqueBatchItemID = batchReq.UniqueBatchItemID
 	resBatch.ResponsePayload.UniqueIdentifier = append(resBatch.ResponsePayload.UniqueIdentifier, &uidk)
+	*idPlaceHolder = ""
 	return &resBatch
 }

@@ -17,6 +17,9 @@ type KmipError struct {
 // General error codes
 var MessageCannotBeParsed = KmipError{resultreason.InvalidMessage, resultreason.OperationFailed, "Message cannot be parsed", 0}
 var InvalidMessageStructure = KmipError{resultreason.InvalidMessage, resultreason.OperationFailed, "Invalid Message structure" , 0}
+var IllegalOperationStructure = KmipError{resultreason.IllegalOperation, resultreason.OperationFailed, "Illegal operation" , 0}
+var PermissionDenied = KmipError{resultreason.PermissionDenied, resultreason.OperationFailed, "Permission denied" , 0}
+var ItemNorFound = KmipError{resultreason.ItemNotFound, resultreason.OperationFailed, "Item not found" , 0}
 
 
 //create eror codes

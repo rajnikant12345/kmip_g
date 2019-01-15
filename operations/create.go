@@ -25,7 +25,7 @@ func prepareCreateEroorResponse(kmipError kmiperror.KmipError) *objects.BatchIte
 	return &resBatch
 }
 
-func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.KmipService) *objects.BatchItem {
+func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString) *objects.BatchItem {
 
 	var AttributeMap = make(map[string]interface{})
 
@@ -76,6 +76,7 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.Km
 	resBatch.ResultStatus = &resultStatus
 	resBatch.Operation = batchReq.Operation
 	resBatch.UniqueBatchItemID = batchReq.UniqueBatchItemID
+	*idPlaceHolder = uidk
 	resBatch.ResponsePayload.UniqueIdentifier = append(resBatch.ResponsePayload.UniqueIdentifier, &uidk)
 	return &resBatch
 }
