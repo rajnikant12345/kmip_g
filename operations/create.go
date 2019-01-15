@@ -4,44 +4,11 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/objects"
 	"fmt"
-	"github.com/rajnikant12345/kmip_g/callbacks"
 	"context"
 	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"github.com/rajnikant12345/kmip_g/kmipservice"
 )
-
-/*
-
-
-	if contactInformation != nil {
-		fmt.Println("Contact Information: ",*contactInformation.(*kmipbin.KmipTextString))
-	}
-
-	if usageMask != nil {
-		fmt.Println("Usage Mask: ",*usageMask.(*kmipbin.KmipInt))
-	}
-
-	if activationdate != nil {
-		fmt.Println("Activation Date: ",*activationdate.(*kmipbin.KmipDate))
-	}
-
-	if processStartDate != nil {
-		fmt.Println("Activation Date: ",*processStartDate.(*kmipbin.KmipDate))
-	}
-
-	if protectStopDate != nil {
-		fmt.Println("Activation Date: ",*protectStopDate.(*kmipbin.KmipDate))
-	}
-
-	if cryptographicAlgorithm != nil {
-		fmt.Println("Cryptographic Algorithm: ",*cryptographicAlgorithm.(*kmipbin.KmipEnum))
-	}
-
-	if cryptographicLength != nil {
-		fmt.Println("Cryptographic Length: ",*cryptographicLength.(*kmipbin.KmipInt))
-	}
-
- */
 
 
 type OpCreate struct {
@@ -49,13 +16,16 @@ type OpCreate struct {
 
 func prepareCreateEroorResponse(kmipError kmiperror.KmipError) *objects.BatchItem {
 	resBatch := objects.BatchItem{}
-	resBatch.ResultStatus = &kmiperror.InvalidMessageStructure.ResultStatus
-	resBatch.ResultMessage = &kmiperror.InvalidMessageStructure.ResultMessage
-	resBatch.ResultReason = &kmiperror.InvalidMessageStructure.ResultReason
+	resBatch.ResultStatus = &kmipError.ResultStatus
+	resBatch.ResultMessage = &kmipError.ResultMessage
+	resBatch.ResultReason = &kmipError.ResultReason
+	if kmipError.Operation != 0 {
+		resBatch.Operation = &kmipError.Operation
+	}
 	return &resBatch
 }
 
-func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem {
+func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.KmipService) *objects.BatchItem {
 
 	var AttributeMap = make(map[string]interface{})
 
@@ -77,7 +47,7 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 				name := string(*v.AttributeName)
 				_, ok := AttributeMap[name]
 				if ok && *v.AttributeName != "Name" {
-					return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
+					return prepareCreateEroorResponse(kmiperror.CreteObjectErrorMultipleInstance)
 				}
 
 				if *v.AttributeName == "Name" {
@@ -94,7 +64,7 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 			name := string(*v.AttributeName)
 			_, ok := AttributeMap[name]
 			if ok && *v.AttributeName != "Name"  {
-				return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
+				return prepareCreateEroorResponse(kmiperror.CreteObjectErrorMultipleInstance)
 			}
 
 			if *v.AttributeName == "Name" {
@@ -111,13 +81,10 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int) *objects.BatchItem
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid , err := callbacks.CreateCallBack(context.Background(), AttributeMap , NameList)
+	uid , err := ks.CreateCallBack(context.Background(), AttributeMap , NameList)
 
-	if err != nil {
-		er := kmiperror.InvalidMessageStructure
-		er.ResultReason = resultreason.CryptographicFailure
-		er.ResultMessage = kmipbin.KmipTextString(err.Error())
-		return prepareCreateEroorResponse(er)
+	if err.ResultMessage != "" {
+		return prepareCreateEroorResponse(err)
 	}
 
 	uidk := kmipbin.KmipTextString(uid)

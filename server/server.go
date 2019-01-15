@@ -5,9 +5,11 @@ import (
 	"github.com/rajnikant12345/kmip_g/operations"
 	"github.com/rajnikant12345/kmip_g/parser"
 	"io"
+	"github.com/rajnikant12345/kmip_g/kmipservice"
 )
 
-func KmipLoop(conn io.ReadWriter) {
+
+func KmipLoop(conn io.ReadWriter , ks *kmipservice.KmipService) {
 	var res *objects.KmipStructResponse
 	dec,_ := parser.NewDecoder(conn)
 	req := objects.KmipStruct{}
@@ -16,7 +18,7 @@ func KmipLoop(conn io.ReadWriter) {
 	if err != nil {
 		res = operations.MakeKmipResponse(err)
 	}else {
-		res = operations.DoKmip(&req)
+		res = operations.DoKmip(&req, ks)
 	}
 
 

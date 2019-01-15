@@ -10,5 +10,5 @@ var OpMap map[kmipbin.KmipEnum]Operation
 func init() {
 	OpMap = make(map[kmipbin.KmipEnum]Operation)
 	OpMap[operation.Create] = &OpCreate{}
-	OpMap[operation.Register] = &OpRegister{}
+	OpMap[operation.Destroy] = &OpDestroy{}
 }

@@ -36,10 +36,10 @@ type RequestPayload struct {
 	AttributeName				 []*kmipbin.KmipTextString
 	RevocationReason			 *RevocationReason
 	CompromiseOccurrenceDate	*kmipbin.KmipDate
-
 	Certificate					*Certificate
 	KeyFormatType				*kmipbin.KmipEnum
 	ProtocolVersion				[]*ProtocolVersion
+	UsageLimitsCount			*kmipbin.KmipLongInt
 }
 
 type ServerInformation struct {
@@ -81,6 +81,7 @@ type ResponsePayload struct {
 	ProtocolVersion				[]*ProtocolVersion
 	VendorIdentification		*kmipbin.KmipTextString
 	ServerInformation			*ServerInformation
+	UsageLimitsCount			*kmipbin.KmipLongInt
 }
 
 type MessageExtension struct {

@@ -5,6 +5,7 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"github.com/rajnikant12345/kmip_g/enums/resultreason"
+	"github.com/rajnikant12345/kmip_g/kmipservice"
 )
 
 const ProtoMajor = 1
@@ -33,7 +34,7 @@ func isPrptocolSupported( version objects.ProtocolVersion ) ( bool , *kmiperror.
 	return true , nil
 }
 
-func processRequest(k *objects.KmipStruct) ( *objects.KmipStructResponse, *kmiperror.KmipError ) {
+func processRequest(k *objects.KmipStruct , ks *kmipservice.KmipService ) ( *objects.KmipStructResponse, *kmiperror.KmipError ) {
 	if k == nil {
 		return nil , &kmiperror.MessageCannotBeParsed
 	}
@@ -92,7 +93,7 @@ func processRequest(k *objects.KmipStruct) ( *objects.KmipStructResponse, *kmipe
 				batchres.Operation = batch.Operation
 				res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , &batchres)
 			} else {
-				batchres := op.DoOp(k,i)
+				batchres := op.DoOp(k,i,ks)
 				res.ResponseMessage.BatchItem = append(res.ResponseMessage.BatchItem , batchres)
 			}
 		}
@@ -121,8 +122,8 @@ func MakeKmipResponse(err  *kmiperror.KmipError ) *objects.KmipStructResponse {
 	return &res
 }
 
-func DoKmip(req *objects.KmipStruct ) *objects.KmipStructResponse {
-	res , err := processRequest(req)
+func DoKmip(req *objects.KmipStruct, ks *kmipservice.KmipService ) *objects.KmipStructResponse {
+	res , err := processRequest(req , ks)
 
 	if err != nil  && res == nil {
 		return MakeKmipResponse(err)
