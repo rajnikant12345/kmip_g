@@ -11,4 +11,5 @@ func init() {
 	OpMap = make(map[kmipbin.KmipEnum]Operation)
 	OpMap[operation.Create] = &OpCreate{}
 	OpMap[operation.Destroy] = &OpDestroy{}
+	OpMap[operation.Check] = &OpCheck{}
 }

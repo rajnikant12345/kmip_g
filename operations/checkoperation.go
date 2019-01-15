@@ -3,33 +3,54 @@ package operations
 import (
 	"github.com/rajnikant12345/kmip_g/kmiperror"
 	"github.com/rajnikant12345/kmip_g/objects"
-	"fmt"
 	"context"
 	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"fmt"
 	"github.com/rajnikant12345/kmip_g/kmipservice"
 )
 
+/*
 
-type OpCreate struct {
-}
 
-func prepareCreateEroorResponse(kmipError kmiperror.KmipError) *objects.BatchItem {
-	resBatch := objects.BatchItem{}
-	resBatch.ResultStatus = &kmipError.ResultStatus
-	resBatch.ResultMessage = &kmipError.ResultMessage
-	resBatch.ResultReason = &kmipError.ResultReason
-	if kmipError.Operation != 0 {
-		resBatch.Operation = &kmipError.Operation
+	if contactInformation != nil {
+		fmt.Println("Contact Information: ",*contactInformation.(*kmipbin.KmipTextString))
 	}
-	return &resBatch
+
+	if usageMask != nil {
+		fmt.Println("Usage Mask: ",*usageMask.(*kmipbin.KmipInt))
+	}
+
+	if activationdate != nil {
+		fmt.Println("Activation Date: ",*activationdate.(*kmipbin.KmipDate))
+	}
+
+	if processStartDate != nil {
+		fmt.Println("Activation Date: ",*processStartDate.(*kmipbin.KmipDate))
+	}
+
+	if protectStopDate != nil {
+		fmt.Println("Activation Date: ",*protectStopDate.(*kmipbin.KmipDate))
+	}
+
+	if cryptographicAlgorithm != nil {
+		fmt.Println("Cryptographic Algorithm: ",*cryptographicAlgorithm.(*kmipbin.KmipEnum))
+	}
+
+	if cryptographicLength != nil {
+		fmt.Println("Cryptographic Length: ",*cryptographicLength.(*kmipbin.KmipInt))
+	}
+
+ */
+
+
+type OpCheck struct {
 }
 
-func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.KmipService) *objects.BatchItem {
 
-	var AttributeMap = make(map[string]interface{})
+func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
 
-	var NameList []*objects.Name
+	fmt.Println("=====================hitting check op====================")
 
 	batchReq := r.GetRequestMessage().BatchItem[batchNum]
 
@@ -37,9 +58,14 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.Km
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	if batchReq.RequestPayload.ObjectType == nil {
+	if len(batchReq.RequestPayload.UniqueIdentifier) == 0 {
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
+
+	if batchReq.RequestPayload.UniqueIdentifier[0] == nil {
+		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
+	}
+
 
 	AttributeMap, NameList, err := ReadTemplateAttributes( batchReq.RequestPayload.TemplateAttribute)
 	if err != nil {
@@ -58,16 +84,12 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.Km
 		AttributeMap[k] = v
 	}
 
-
-	fmt.Println("=================Create operation=========================")
-
-
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid , errs := ks.CreateCallBack(context.Background(), AttributeMap , NameList)
+	uid , errs := ks.CheckCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]), AttributeMap )
 
-	if uid == "" {
+	if uid != "" {
 		return prepareCreateEroorResponse(errs)
 	}
 

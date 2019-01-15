@@ -44,13 +44,13 @@ import (
  */
 
 
-type OpDestroy struct {
+type OpDelAttr struct {
 }
 
 
-func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
+func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService) *objects.BatchItem {
 
-	fmt.Println("=====================hitting destroy====================")
+	fmt.Println("=====================hitting del attr op====================")
 
 	batchReq := r.GetRequestMessage().BatchItem[batchNum]
 
@@ -67,14 +67,48 @@ func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	}
 
 
+	AttributeMap, NameList, err := ReadTemplateAttributes( batchReq.RequestPayload.TemplateAttribute)
+	if err != nil {
+		return prepareCreateEroorResponse(*err)
+	}
+
+
+	AttributeMap1, NameList1, err := ReadAttributes( batchReq.RequestPayload.Attribute)
+	if err != nil {
+		return prepareCreateEroorResponse(*err)
+	}
+
+	NameList = append(NameList,NameList1...)
+
+	for k, v := range AttributeMap1 {
+		AttributeMap[k] = v
+	}
+
+	var attrlist  []string
+
+	if len(batchReq.RequestPayload.AttributeName) != 0 {
+		for i:=0;i<len(batchReq.RequestPayload.AttributeName);i++ {
+			if batchReq.RequestPayload.AttributeName[i] != nil {
+				attrlist = append(attrlist , string(*batchReq.RequestPayload.AttributeName[i]))
+			}
+		}
+	}
+
+	for k, _ := range AttributeMap {
+		attrlist = append(attrlist , k)
+	}
+
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
+	uid ,attr , errs := ks.DeleteAttributeCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]), attrlist )
 
-	uid , err := ks.DestroyCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]) )
+	if uid != "" {
+		return prepareCreateEroorResponse(errs)
+	}
 
-	if err.ResultMessage != "" {
-		return prepareCreateEroorResponse(err)
+	if len(attr) != 0 {
+		resBatch.ResponsePayload.Attribute = attr
 	}
 
 	uidk := kmipbin.KmipTextString(uid)

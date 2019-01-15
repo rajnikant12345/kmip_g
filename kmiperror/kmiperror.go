@@ -39,3 +39,4 @@ var DestroyItemNotFound = KmipError{resultreason.ItemNotFound, resultreason.Oper
 var DestroyOblectArchived = KmipError{resultreason.ObjectArchived, resultreason.OperationFailed, "Invalid Message structure" , operation.Destroy}
 
 
+
