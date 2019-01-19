@@ -72,6 +72,7 @@ func (k *KmipInt) UnMarshalBin(b []byte) error {
 	return nil
 }
 
+
 type KmipEnum uint32
 
 func (k *KmipEnum) MarshalBin() []byte {
@@ -88,6 +89,7 @@ func (k *KmipEnum) UnMarshalBin(b []byte) error {
 	*k = KmipEnum(binary.BigEndian.Uint32(b[:4]))
 	return nil
 }
+
 
 type KmipInterval uint32
 
@@ -106,6 +108,8 @@ func (k *KmipInterval) UnMarshalBin(b []byte) error {
 	return nil
 }
 
+
+
 type KmipLongInt uint64
 
 func (k *KmipLongInt) MarshalBin() []byte {
@@ -122,6 +126,8 @@ func (k *KmipLongInt) UnMarshalBin(b []byte) error {
 	*k = KmipLongInt(binary.BigEndian.Uint64(b))
 	return nil
 }
+
+
 
 type KmipBoolean uint64
 
@@ -140,6 +146,10 @@ func (k *KmipBoolean) UnMarshalBin(b []byte) error {
 	return nil
 }
 
+
+
+
+
 type KmipDate uint64
 
 func (k *KmipDate) MarshalBin() []byte {
@@ -156,6 +166,10 @@ func (k *KmipDate) UnMarshalBin(b []byte) error {
 	*k = KmipDate(binary.BigEndian.Uint64(b))
 	return nil
 }
+
+
+
+
 
 type KmipTextString string
 
@@ -176,6 +190,8 @@ func (k *KmipTextString) UnMarshalBin(b []byte, length int) error {
 	return nil
 }
 
+
+
 type KmipByteString []byte
 
 func (k *KmipByteString) MarshalBin() []byte {
@@ -193,6 +209,8 @@ func (k *KmipByteString) UnMarshalBin(b []byte, length int) error {
 	*k = KmipByteString(b[:length])
 	return nil
 }
+
+
 
 type KmipBigInt []byte
 
@@ -217,3 +235,5 @@ type KmipStruct interface {
 	MarsalBin() []byte
 	UnMarshalBin() error
 }
+
+

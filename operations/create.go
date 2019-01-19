@@ -8,6 +8,8 @@ import (
 	"github.com/rajnikant12345/kmip_g/enums/resultreason"
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"github.com/rajnikant12345/kmip_g/kmipservice"
+	"github.com/rajnikant12345/kmip_g/enums/keyenums"
+	"github.com/rajnikant12345/kmip_g/enums/operation"
 )
 
 
@@ -27,9 +29,6 @@ func prepareCreateEroorResponse(kmipError kmiperror.KmipError) *objects.BatchIte
 
 func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString) *objects.BatchItem {
 
-	var AttributeMap = make(map[string]interface{})
-
-	var NameList []*objects.Name
 
 	batchReq := r.GetRequestMessage().BatchItem[batchNum]
 
@@ -41,21 +40,22 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.Km
 		return prepareCreateEroorResponse(kmiperror.InvalidMessageStructure)
 	}
 
-	AttributeMap, NameList, err := ReadTemplateAttributes( batchReq.RequestPayload.TemplateAttribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
+	if *batchReq.RequestPayload.ObjectType !=  keyenums.SymmetricKey {
+		err := kmiperror.FeatureNotSupported
+		err.Operation = operation.Create
+		err.ResultMessage = "Invalid object type"
+		return prepareCreateEroorResponse(kmiperror.FeatureNotSupported)
 	}
 
 
-	AttributeMap1, NameList1, err := ReadAttributes( batchReq.RequestPayload.Attribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
+	var attrList []*objects.Attribute
+
+	if  batchReq.RequestPayload.TemplateAttribute != nil {
+		attrList = batchReq.RequestPayload.TemplateAttribute.Attribute
 	}
 
-	NameList = append(NameList,NameList1...)
-
-	for k, v := range AttributeMap1 {
-		AttributeMap[k] = v
+	if batchReq.RequestPayload.Attribute != nil {
+		attrList = append(attrList , batchReq.RequestPayload.Attribute...)
 	}
 
 
@@ -65,7 +65,7 @@ func (op *OpCreate) DoOp(r *objects.KmipStruct, batchNum int, ks *kmipservice.Km
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid , errs := ks.CreateCallBack(context.Background(), AttributeMap , NameList)
+	uid , errs := ks.CreateCallBack(context.Background(), attrList)
 
 	if uid == "" {
 		return prepareCreateEroorResponse(errs)

@@ -10,44 +10,9 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipservice"
 )
 
-/*
-
-
-	if contactInformation != nil {
-		fmt.Println("Contact Information: ",*contactInformation.(*kmipbin.KmipTextString))
-	}
-
-	if usageMask != nil {
-		fmt.Println("Usage Mask: ",*usageMask.(*kmipbin.KmipInt))
-	}
-
-	if activationdate != nil {
-		fmt.Println("Activation Date: ",*activationdate.(*kmipbin.KmipDate))
-	}
-
-	if processStartDate != nil {
-		fmt.Println("Activation Date: ",*processStartDate.(*kmipbin.KmipDate))
-	}
-
-	if protectStopDate != nil {
-		fmt.Println("Activation Date: ",*protectStopDate.(*kmipbin.KmipDate))
-	}
-
-	if cryptographicAlgorithm != nil {
-		fmt.Println("Cryptographic Algorithm: ",*cryptographicAlgorithm.(*kmipbin.KmipEnum))
-	}
-
-	if cryptographicLength != nil {
-		fmt.Println("Cryptographic Length: ",*cryptographicLength.(*kmipbin.KmipInt))
-	}
-
- */
-
 
 type OpDestroy struct {
 }
-
-
 
 
 func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.KmipService, idPlaceHolder *kmipbin.KmipTextString) *objects.BatchItem {
@@ -73,7 +38,7 @@ func (op *OpDestroy) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 
 	uid , err := ks.DestroyCallBack(context.Background() , string(*batchReq.RequestPayload.UniqueIdentifier[0]) )
 
-	if err.ResultMessage != "" {
+	if uid == "" {
 		return prepareCreateEroorResponse(err)
 	}
 

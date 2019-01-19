@@ -11,40 +11,6 @@ import (
 	"github.com/rajnikant12345/kmip_g/enums/operation"
 )
 
-/*
-
-
-	if contactInformation != nil {
-		fmt.Println("Contact Information: ",*contactInformation.(*kmipbin.KmipTextString))
-	}
-
-	if usageMask != nil {
-		fmt.Println("Usage Mask: ",*usageMask.(*kmipbin.KmipInt))
-	}
-
-	if activationdate != nil {
-		fmt.Println("Activation Date: ",*activationdate.(*kmipbin.KmipDate))
-	}
-
-	if processStartDate != nil {
-		fmt.Println("Activation Date: ",*processStartDate.(*kmipbin.KmipDate))
-	}
-
-	if protectStopDate != nil {
-		fmt.Println("Activation Date: ",*protectStopDate.(*kmipbin.KmipDate))
-	}
-
-	if cryptographicAlgorithm != nil {
-		fmt.Println("Cryptographic Algorithm: ",*cryptographicAlgorithm.(*kmipbin.KmipEnum))
-	}
-
-	if cryptographicLength != nil {
-		fmt.Println("Cryptographic Length: ",*cryptographicLength.(*kmipbin.KmipInt))
-	}
-
- */
-
-
 type OpCheck struct {
 }
 
@@ -70,7 +36,7 @@ func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.Km
 
 	uid , attrmap , errs := ks.CheckCallBack(context.Background() , string(*id) )
 
-	if errs.ResultReason != 0 {
+	if uid == "" {
 		return prepareCreateEroorResponse(errs)
 	}
 
@@ -87,12 +53,14 @@ func (op *OpCheck) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.Km
 	if batchReq.RequestPayload.CryptographicUsageMask != nil {
 		mask := int(*batchReq.RequestPayload.CryptographicUsageMask)
 		usageMaks := attrmap["Cryptographic Usage Mask"].(int)
-		fmt.Println(mask , usageMaks)
 		if (mask & usageMaks) == 0 {
 			err := kmiperror.PermissionDenied
 			err.Operation = operation.Check
 			err.ResultMessage = "'Cryptographic Usage Mask' prohibited"
-			return prepareCreateEroorResponse(err)
+			br := prepareCreateEroorResponse(err)
+			br.ResponsePayload = &objects.ResponsePayload{}
+			br.ResponsePayload.CryptographicUsageMask = batchReq.RequestPayload.CryptographicUsageMask
+			return br
 		}
 
 	}

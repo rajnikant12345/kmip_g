@@ -82,7 +82,7 @@ type ResponsePayload struct {
 	VendorIdentification         *kmipbin.KmipTextString
 	ServerInformation            *ServerInformation
 	UsageLimitsCount             *kmipbin.KmipLongInt
-	CryptoGraphicUsageMask       *kmipbin.KmipInt
+	CryptographicUsageMask       *kmipbin.KmipInt
 }
 
 type MessageExtension struct {

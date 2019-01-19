@@ -12,4 +12,11 @@ func init() {
 	OpMap[operation.Create] = &OpCreate{}
 	OpMap[operation.Destroy] = &OpDestroy{}
 	OpMap[operation.Check] = &OpCheck{}
+	OpMap[operation.DeleteAttribute] = &OpDelAttr{}
+	OpMap[operation.GetAttributeList] = &OpGetAttrList{}
+	OpMap[operation.ModifyAttribute] = &OpModAttr{}
+	OpMap[operation.GetAttributes] = &OpGetAttr{}
+	OpMap[operation.Locate] = &OpLocate{}
+
+
 }

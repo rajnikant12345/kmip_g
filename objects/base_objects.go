@@ -2,6 +2,7 @@ package objects
 
 import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
+	"fmt"
 )
 
 type X509CertificateIdentifier struct {
@@ -38,6 +39,15 @@ type Name struct {
 	NameValue *kmipbin.KmipTextString
 	NameType  *kmipbin.KmipEnum
 }
+
+func (d *Name) MarshalJSON() ([]byte, error) {
+
+	data := fmt.Sprintf(`{"NameValue":"%s","NameType":"%d"}`,*d.NameValue,*d.NameType)
+	fmt.Println("data")
+	return []byte(data), nil
+}
+
+
 
 type Nonce struct {
 	NonceID    *kmipbin.KmipByteString

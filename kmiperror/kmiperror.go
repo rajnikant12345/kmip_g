@@ -21,6 +21,9 @@ var IllegalOperationStructure = KmipError{resultreason.IllegalOperation, resultr
 var PermissionDenied = KmipError{resultreason.PermissionDenied, resultreason.OperationFailed, "Permission denied" , 0}
 var ItemNorFound = KmipError{resultreason.ItemNotFound, resultreason.OperationFailed, "Item not found" , 0}
 
+var GeneralFailure = KmipError{resultreason.GeneralFailure, resultreason.OperationFailed, "GeneralFailure" , 0}
+var InvalidField = KmipError{resultreason.InvalidField, resultreason.OperationFailed, "Type is not recognized" , 0}
+var FeatureNotSupported = KmipError{resultreason.FeatureNotSupported, resultreason.OperationFailed, "Not Supported" , 0}
 
 //create eror codes
 

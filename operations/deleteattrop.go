@@ -8,40 +8,9 @@ import (
 	"github.com/rajnikant12345/kmip_g/kmipbin"
 	"fmt"
 	"github.com/rajnikant12345/kmip_g/kmipservice"
+	"encoding/xml"
 )
 
-/*
-
-
-	if contactInformation != nil {
-		fmt.Println("Contact Information: ",*contactInformation.(*kmipbin.KmipTextString))
-	}
-
-	if usageMask != nil {
-		fmt.Println("Usage Mask: ",*usageMask.(*kmipbin.KmipInt))
-	}
-
-	if activationdate != nil {
-		fmt.Println("Activation Date: ",*activationdate.(*kmipbin.KmipDate))
-	}
-
-	if processStartDate != nil {
-		fmt.Println("Activation Date: ",*processStartDate.(*kmipbin.KmipDate))
-	}
-
-	if protectStopDate != nil {
-		fmt.Println("Activation Date: ",*protectStopDate.(*kmipbin.KmipDate))
-	}
-
-	if cryptographicAlgorithm != nil {
-		fmt.Println("Cryptographic Algorithm: ",*cryptographicAlgorithm.(*kmipbin.KmipEnum))
-	}
-
-	if cryptographicLength != nil {
-		fmt.Println("Cryptographic Length: ",*cryptographicLength.(*kmipbin.KmipInt))
-	}
-
- */
 
 
 type OpDelAttr struct {
@@ -64,22 +33,16 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	}
 
 
-	AttributeMap, NameList, err := ReadTemplateAttributes( batchReq.RequestPayload.TemplateAttribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
+	var attrListTemplate []*objects.Attribute
+
+	if  batchReq.RequestPayload.TemplateAttribute != nil {
+		attrListTemplate = batchReq.RequestPayload.TemplateAttribute.Attribute
 	}
 
-
-	AttributeMap1, NameList1, err := ReadAttributes( batchReq.RequestPayload.Attribute)
-	if err != nil {
-		return prepareCreateEroorResponse(*err)
+	if batchReq.RequestPayload.Attribute != nil {
+		attrListTemplate = append(attrListTemplate , batchReq.RequestPayload.Attribute...)
 	}
 
-	NameList = append(NameList,NameList1...)
-
-	for k, v := range AttributeMap1 {
-		AttributeMap[k] = v
-	}
 
 	var attrlist  []string
 
@@ -91,21 +54,19 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 		}
 	}
 
-	for k, _ := range AttributeMap {
-		attrlist = append(attrlist , k)
+	for i:=0;i<len(attrListTemplate);i++ {
+		if attrListTemplate[i].AttributeName != nil {
+			attrlist = append(attrlist , string(*attrListTemplate[i].AttributeName))
+		}
 	}
 
 	resBatch := objects.BatchItem{}
 	resBatch.ResponsePayload = &objects.ResponsePayload{}
 
-	uid ,attr , errs := ks.DeleteAttributeCallBack(context.Background() , string(*id), attrlist )
+	uid , attr, errs := ks.DeleteAttributeCallBack(context.Background() , string(*id), attrlist )
 
-	if uid != "" {
+	if uid == "" {
 		return prepareCreateEroorResponse(errs)
-	}
-
-	if len(attr) != 0 {
-		resBatch.ResponsePayload.Attribute = attr
 	}
 
 	uidk := kmipbin.KmipTextString(uid)
@@ -113,7 +74,13 @@ func (op *OpDelAttr) DoOp(r *objects.KmipStruct, batchNum int , ks *kmipservice.
 	resBatch.ResultStatus = &resultStatus
 	resBatch.Operation = batchReq.Operation
 	resBatch.UniqueBatchItemID = batchReq.UniqueBatchItemID
+	resBatch.ResponsePayload.Attribute = attr
 	resBatch.ResponsePayload.UniqueIdentifier = append(resBatch.ResponsePayload.UniqueIdentifier, &uidk)
+
 	*idPlaceHolder = ""
+	vvv,_ := xml.Marshal(resBatch)
+
+	fmt.Println(string(vvv))
+
 	return &resBatch
 }

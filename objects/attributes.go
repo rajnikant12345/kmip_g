@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"encoding/hex"
 	"github.com/rajnikant12345/kmip_g/kmiptags"
+	"reflect"
+	"strconv"
 )
 
 type Attribute struct {
@@ -15,6 +17,60 @@ type Attribute struct {
 	AttributeValue interface{}
 	data           []byte	`ignore:"true"`
 	function       func(interface{} , []byte)	`ignore:"true"`
+}
+
+func (a *Attribute)Set(in interface{}) {
+
+	if reflect.TypeOf(in).Kind() == reflect.Map {
+		m := in.(map[string]interface{})
+		v := reflect.TypeOf(a.AttributeValue)
+		av := reflect.ValueOf(a.AttributeValue)
+		for i := 0; i < v.Elem().NumField(); i++ {
+			vv,ok := m[v.Elem().Field(i).Name]
+			if !ok {
+				continue
+			}
+			ty := v.Elem().Field(i).Type.Elem()
+			//fmt.Println("++++(((()))+++",ty)
+			k := reflect.New(ty)
+			mval := reflect.ValueOf(vv)
+			if mval.Kind()!= ty.Kind() {
+				if ty.Kind() == reflect.Uint32 && mval.Kind() == reflect.String {
+					valv,err := strconv.ParseInt(mval.Interface().(string),10,32)
+					if err != nil {
+						continue
+					}
+					mval1 := reflect.ValueOf(valv)
+					valm := mval1.Convert(ty)
+					k.Elem().Set(valm)
+				} else if ty.Kind() == reflect.Uint64 && mval.Kind() == reflect.String {
+					valv,err := strconv.ParseInt(mval.Interface().(string),10,64)
+					if err != nil {
+						continue
+					}
+					mval1 := reflect.ValueOf(valv)
+					valm := mval1.Convert(ty)
+					k.Elem().Set(valm)
+				} else if ty.Kind() == reflect.Slice && mval.Kind() == reflect.String {
+					s := mval.Interface().(string)
+					k := reflect.MakeSlice(ty, len(s),len(s))
+					reflect.Copy(k, reflect.ValueOf(s))
+				}
+			} else {
+				valm := mval.Convert(ty)
+				k.Elem().Set(valm)
+			}
+			av.Elem().Field(i).Set(k)
+		}
+	} else {
+		//fmt.Println(reflect.TypeOf(in).Kind())
+		v := reflect.ValueOf(a.AttributeValue)
+		if reflect.TypeOf(in).Kind() == reflect.Ptr {
+			v.Elem().Set(reflect.ValueOf(in).Elem().Convert(v.Elem().Type()))
+		}else {
+			v.Elem().Set(reflect.ValueOf(in).Convert(v.Elem().Type()))
+		}
+	}
 }
 
 
@@ -74,7 +130,7 @@ func (a *Attribute) Unpack(b []byte) {
 	le = kmipbin.PadLength(int(l))
 	b = b[8:]
 
-	a.CreateAttribute()
+	a.CreateAttribute(nil)
 
 	switch tty.Type {
 	case 2,3,5,6,9,10:
@@ -127,8 +183,8 @@ func (a *Attribute) Marshal(f func(interface{}) []byte ) []byte {
 	return out.Bytes()
 }
 
-func (a *Attribute) CreateAttribute() {
-
+func (a *Attribute) CreateAttribute(in reflect.Type) (val bool) {
+	val = true
 	if a.AttributeName == nil {
 		return
 	}
@@ -136,6 +192,7 @@ func (a *Attribute) CreateAttribute() {
 		a.AttributeValue = new(kmipbin.KmipTextString)
 	}
 	if *a.AttributeName == "Name" {
+		fmt.Println("Creating attribute name....")
 		a.AttributeValue = new(Name)
 	}
 	if *a.AttributeName == "Object Type" {
@@ -246,9 +303,12 @@ func (a *Attribute) CreateAttribute() {
 	if *a.AttributeName == "Last Change Date" {
 		a.AttributeValue = new(kmipbin.KmipDate)
 	}
-	/*if strings.HasPrefix(string(*a.AttributeName),"x-") {
-		a.AttributeValue = make([]byte,1000)
-	}*/
+	if strings.HasPrefix(string(*a.AttributeName),"x-") {
+		if in != nil {
+			a.AttributeValue = reflect.New(in)
+		}
+		return false
+	}
 	if *a.AttributeName == "Alternative Name" {
 		a.AttributeValue = new(AlternativeName)
 	}
@@ -261,4 +321,5 @@ func (a *Attribute) CreateAttribute() {
 	if *a.AttributeName == "Original Creation Date" {
 		a.AttributeValue = new(kmipbin.KmipDate)
 	}
+	return
 }
